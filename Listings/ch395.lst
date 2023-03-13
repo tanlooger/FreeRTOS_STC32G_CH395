@@ -1,0 +1,78 @@
+C251 COMPILER V5.60.0,  ch395                                                              12/03/23  19:26:36  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE ch395
+OBJECT MODULE PLACED IN .\Objects\ch395.obj
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE Sources\Driver\ch395\ch395.c XSMALL FUNCTIONS(REENTRANT) OPTIMIZE(4,SP
+                    -EED) BROWSE INCDIR(.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32G12
+                    -K128;.\Sources\Driver\inc;.\Sources\Task\inc;.\Sources\Driver\ch395) DEBUG PRINT(.\Listings\ch395.lst) TABS(2) OBJECT(.\
+                    -Objects\ch395.obj) 
+
+stmt  level    source
+
+    1          #include "ch395.h"
+    2          #include "string.h"
+    3          
+    4          
+    5          
+    6          struct _SOCK_INF xdata SockInf[4];/* 保存Socket信息 */
+    7          struct _CH395_SYS xdata CH395Inf;/* 保存CH395信息 */
+    8          
+    9          
+   10          /* CH395相关定义 */
+   11          const uint8_t CH395IPAddr[4] = {192,168,1,10};                         /* CH395IP地址 */
+   12          const uint8_t CH395GWIPAddr[4] = {192,168,1,1};                        /* CH395网关 */
+   13          const uint8_t CH395IPMask[4] = {255,255,255,0};                        /* CH395子网掩码 */
+   14          
+   15          
+   16          
+   17          /**********************************************************************************
+   18          * Function Name  : InitCH395InfParam
+   19          * Description    : 初始化CH395Inf参数
+   20          * Input          : None
+   21          * Output         : None
+   22          * Return         : None
+   23          **********************************************************************************/
+   24          void InitCH395InfParam(void)
+   25          {
+   26   1          memset(&CH395Inf,0,sizeof(CH395Inf));                            /* 将CH395Inf全部清零*/
+   27   1          memcpy(CH395Inf.IPAddr,CH395IPAddr,sizeof(CH395IPAddr));         /* 将IP地址写入CH395Inf中 */
+   28   1          memcpy(CH395Inf.GWIPAddr,CH395GWIPAddr,sizeof(CH395GWIPAddr));   /* 将网关IP地址写入CH395Inf�
+             -� */
+   29   1          memcpy(CH395Inf.MASKAddr,CH395IPMask,sizeof(CH395IPMask));       /* 将子网掩码写入CH395Inf中 
+             -*/
+   30   1      }
+   31          
+   32          
+   33          
+   34          
+   35          
+   36          
+   37          
+   38          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =        98     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =       151     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+C251 COMPILER V5.60.0,  ch395                                                              12/03/23  19:26:36  PAGE 2   
+
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        12     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,84 @@
+C251 COMPILER V5.60.0,  CH395SPI_HW                                                        12/03/23  16:07:59  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE CH395SPI_HW
+OBJECT MODULE PLACED IN .\Objects\CH395SPI_HW.obj
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE Sources\Driver\ch395\CH395SPI_HW.C XSMALL FUNCTIONS(REENTRANT) OPTIMIZ
+                    -E(4,SPEED) BROWSE INCDIR(.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\ST
+                    -C32G12K128;.\Sources\Driver\inc;.\Sources\Task\inc) DEBUG PRINT(.\Listings\CH395SPI_HW.lst) TABS(2) OBJECT(.\Objects\CH3
+                    -95SPI_HW.obj) 
+
+stmt  level    source
+
+    1          /********************************** (C) COPYRIGHT *******************************
+    2          * File Name          : CH395SPI_HW.C
+    3          * Author             : WCH
+    4          * Version            : V1.1
+    5          * Date               : 2014/8/1
+    6          * Description        : CH395芯片 硬件SPI串行连接的硬件抽象层 V1.0
+    7          *
+    8          *******************************************************************************/
+    9          
+   10          
+   11          #include "ch395spi_hw.h"
+*** WARNING C34 IN LINE 34 OF Sources\Driver\ch395\spi.h: 'hspi3': missing declaration specifiers
+*** ERROR C42 IN LINE 34 OF Sources\Driver\ch395\spi.h: 'hspi3': not in formal parameter list
+*** ERROR C42 IN LINE 40 OF Sources\Driver\ch395\spi.h: 'MX_SPI3_Init': not in formal parameter list
+*** ERROR C29 IN LINE 50 OF Sources\Driver\ch395\ch395spi_hw.h: formal/parameter has illegal storage class
+*** ERROR C25 IN LINE 52 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near 'SPI_HandleTypeDef'
+*** WARNING C34 IN LINE 52 OF Sources\Driver\ch395\ch395spi_hw.h: 'HSPI': missing declaration specifiers
+*** ERROR C42 IN LINE 52 OF Sources\Driver\ch395\ch395spi_hw.h: 'HSPI': not in formal parameter list
+*** WARNING C34 IN LINE 53 OF Sources\Driver\ch395\ch395spi_hw.h: 'GPIO_TypeDef': missing declaration specifiers
+*** ERROR C42 IN LINE 53 OF Sources\Driver\ch395\ch395spi_hw.h: 'GPIO_TypeDef': not in formal parameter list
+*** ERROR C25 IN LINE 53 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
+*** WARNING C34 IN LINE 53 OF Sources\Driver\ch395\ch395spi_hw.h: 'CS_PORT': missing declaration specifiers
+*** ERROR C42 IN LINE 53 OF Sources\Driver\ch395\ch395spi_hw.h: 'CS_PORT': not in formal parameter list
+*** ERROR C42 IN LINE 54 OF Sources\Driver\ch395\ch395spi_hw.h: 'CS_PIN': not in formal parameter list
+*** WARNING C34 IN LINE 55 OF Sources\Driver\ch395\ch395spi_hw.h: 'GPIO_TypeDef': missing declaration specifiers
+*** ERROR C42 IN LINE 55 OF Sources\Driver\ch395\ch395spi_hw.h: 'GPIO_TypeDef': not in formal parameter list
+*** ERROR C25 IN LINE 55 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
+*** WARNING C34 IN LINE 55 OF Sources\Driver\ch395\ch395spi_hw.h: 'INT_PORT': missing declaration specifiers
+*** ERROR C42 IN LINE 55 OF Sources\Driver\ch395\ch395spi_hw.h: 'INT_PORT': not in formal parameter list
+*** ERROR C42 IN LINE 56 OF Sources\Driver\ch395\ch395spi_hw.h: 'INT_PIN': not in formal parameter list
+*** WARNING C34 IN LINE 57 OF Sources\Driver\ch395\ch395spi_hw.h: 'GPIO_TypeDef': missing declaration specifiers
+*** ERROR C42 IN LINE 57 OF Sources\Driver\ch395\ch395spi_hw.h: 'GPIO_TypeDef': not in formal parameter list
+*** ERROR C25 IN LINE 57 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
+*** WARNING C34 IN LINE 57 OF Sources\Driver\ch395\ch395spi_hw.h: 'RST_PORT': missing declaration specifiers
+*** ERROR C42 IN LINE 57 OF Sources\Driver\ch395\ch395spi_hw.h: 'RST_PORT': not in formal parameter list
+*** ERROR C42 IN LINE 58 OF Sources\Driver\ch395\ch395spi_hw.h: 'RST_PIN': not in formal parameter list
+*** ERROR C42 IN LINE 60 OF Sources\Driver\ch395\ch395spi_hw.h: 'CH395Index': not in formal parameter list
+*** ERROR C42 IN LINE 61 OF Sources\Driver\ch395\ch395spi_hw.h: 'IPAddr': not in formal parameter list
+*** ERROR C42 IN LINE 62 OF Sources\Driver\ch395\ch395spi_hw.h: 'GWIPAddr': not in formal parameter list
+*** ERROR C42 IN LINE 63 OF Sources\Driver\ch395\ch395spi_hw.h: 'MASKAddr': not in formal parameter list
+*** ERROR C42 IN LINE 64 OF Sources\Driver\ch395\ch395spi_hw.h: 'MacAddr': not in formal parameter list
+*** ERROR C42 IN LINE 65 OF Sources\Driver\ch395\ch395spi_hw.h: 'PHYStat': not in formal parameter list
+*** ERROR C42 IN LINE 66 OF Sources\Driver\ch395\ch395spi_hw.h: 'MackFilt': not in formal parameter list
+*** ERROR C42 IN LINE 67 OF Sources\Driver\ch395\ch395spi_hw.h: 'RetranCount': not in formal parameter list
+*** ERROR C42 IN LINE 68 OF Sources\Driver\ch395\ch395spi_hw.h: 'RetranPeriod': not in formal parameter list
+*** ERROR C42 IN LINE 69 OF Sources\Driver\ch395\ch395spi_hw.h: 'IntfMode': not in formal parameter list
+*** ERROR C25 IN LINE 70 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '}'
+*** WARNING C34 IN LINE 71 OF Sources\Driver\ch395\ch395spi_hw.h: 'CH395_HandleTypedef': missing declaration specifiers
+*** ERROR C25 IN LINE 103 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
+*** ERROR C25 IN LINE 104 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
+*** ERROR C25 IN LINE 105 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
+*** ERROR C25 IN LINE 106 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
+*** ERROR C25 IN LINE 107 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
+   12          
+   13          /*******************************************************************************
+   14          * Function Name  : mDelayuS
+C251 COMPILER V5.60.0,  CH395SPI_HW                                                        12/03/23  16:07:59  PAGE 2   
+
+   15          * Description    : 延时指定微秒时间,根据单片机主频调整,不精确
+   16          * Input          : us---延时时间值
+   17          * Output         : None
+   18          * Return         : None
+   19          *******************************************************************************/
+   20          void mDelayuS( uint8_t us )
+   21          {
+   22   1          while(us--)
+   23   1          {
+   24   2              for(int i=0; i<180; i++); //简单延时 并不准确    F429@180MHZ
+*** ERROR C25 IN LINE 24 OF Sources\Driver\ch395\CH395SPI_HW.C: syntax error near 'int'
+*** ERROR C7 IN LINE 24 OF Sources\Driver\ch395\CH395SPI_HW.C: compilation aborted
+
+C251 COMPILATION COMPLETE.  9 WARNING(S),  35 ERROR(S)
