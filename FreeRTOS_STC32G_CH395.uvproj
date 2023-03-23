@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>FreeRTOS_STC32G_Demo</TargetName>
+      <TargetName>FreeRTOS_STC32G_CH395</TargetName>
       <ToolsetNumber>0x1</ToolsetNumber>
       <ToolsetName>MCS-251</ToolsetName>
       <uAC6>8</uAC6>
@@ -272,7 +272,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32G12K128;.\Sources\Driver\inc;.\Sources\Task\inc;.\Sources\Driver\ch395</IncludePath>
+              <IncludePath>.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32G12K128;.\Sources\Driver\inc;.\Sources\Task\inc;.\Sources\ch395</IncludePath>
             </VariousControls>
           </C251>
           <Ax51>
@@ -544,16 +544,6 @@
               <FileType>5</FileType>
               <FilePath>.\Sources\Task\inc\uart2_3.h</FilePath>
             </File>
-            <File>
-              <FileName>task_uart1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Task\src\task_uart1.c</FilePath>
-            </File>
-            <File>
-              <FileName>task_uart1.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Sources\Task\inc\task_uart1.h</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -750,29 +740,69 @@
           <GroupName>ch395</GroupName>
           <Files>
             <File>
-              <FileName>CH395INC.H</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Sources\Driver\ch395\CH395INC.H</FilePath>
-            </File>
-            <File>
               <FileName>CH395UART.C</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\Driver\ch395\CH395UART.C</FilePath>
+              <FilePath>.\Sources\ch395\CH395UART.C</FilePath>
             </File>
             <File>
-              <FileName>CH395CMD.H</FileName>
+              <FileName>CH395INC.H</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Sources\Driver\ch395\CH395CMD.H</FilePath>
+              <FilePath>.\Sources\ch395\CH395INC.H</FilePath>
             </File>
             <File>
               <FileName>CH395CMD.C</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\Driver\ch395\CH395CMD.C</FilePath>
+              <FilePath>.\Sources\ch395\CH395CMD.C</FilePath>
+            </File>
+            <File>
+              <FileName>CH395CMD.H</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\ch395\CH395CMD.H</FilePath>
+            </File>
+            <File>
+              <FileName>CH395UART.H</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\ch395\CH395UART.H</FilePath>
+            </File>
+            <File>
+              <FileName>CH395.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ch395\CH395.C</FilePath>
+            </File>
+            <File>
+              <FileName>CH395.H</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\ch395\CH395.H</FilePath>
+            </File>
+            <File>
+              <FileName>HTTTPS.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ch395\HTTTPS.C</FilePath>
+            </File>
+            <File>
+              <FileName>HTTPS.H</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\ch395\HTTPS.H</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
           <GroupName>modbusTCP</GroupName>
+        </Group>
+        <Group>
+          <GroupName>stc32lib</GroupName>
+          <Files>
+            <File>
+              <FileName>stc_usb_hid_32g.LIB</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\STC32G12k128-STC89-DEMO-NOT-POWER-OFF-USB-HID-ISP-20220713\COMM\stc_usb_hid_32g.LIB</FilePath>
+            </File>
+            <File>
+              <FileName>STC32G.H</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\STC32G12k128-STC89-DEMO-NOT-POWER-OFF-USB-HID-ISP-20220713\COMM\STC32G.H</FilePath>
+            </File>
+          </Files>
         </Group>
       </Groups>
     </Target>

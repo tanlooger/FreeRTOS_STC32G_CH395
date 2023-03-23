@@ -1,0 +1,172 @@
+C251 COMPILER V5.60.0,  CH395PARA_HW                                                       23/03/23  08:54:30  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE CH395PARA_HW
+OBJECT MODULE PLACED IN .\Objects\CH395PARA_HW.obj
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE Sources\ch395\CH395PARA_HW.C XSMALL FUNCTIONS(REENTRANT) OPTIMIZE(4,SP
+                    -EED) BROWSE INCDIR(.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32G12
+                    -K128;.\Sources\Driver\inc;.\Sources\Task\inc;.\Sources\Driver\ch395;.\Sources\ch395;.\PUB) DEBUG PRINT(.\Listings\CH395P
+                    -ARA_HW.lst) TABS(2) OBJECT(.\Objects\CH395PARA_HW.obj) 
+
+stmt  level    source
+
+    1          
+    2          /********************************** (C) COPYRIGHT *********************************
+    3          * File Name          : CH395PARA_HW.C
+    4          * Author             : WCH
+    5          * Version            : V1.1
+    6          * Date               : 2014/8/1
+    7          * Description        : CH395 硬件PARA接口函数
+    8          *             
+    9          **********************************************************************************/
+   10          
+   11          
+   12          #include "FreeRTOS.h"
+   13          
+   14          /*********************************************************************************
+   15          * Function Name  : mDelayuS
+   16          * Description    : 延时指定微秒时间,根据单片机主频调整,不精确
+   17          * Input          : us---延时时间值
+   18          * Output         : None
+   19          * Return         : None
+   20          *********************************************************************************/
+   21          void mDelayuS( uint8_t us )
+   22          {
+   23   1        int i;  
+   24   1        while( us -- ) 
+   25   1        {
+   26   2          for( i = 0; i != 20; i++ );
+   27   2        }
+   28   1      }
+   29          
+   30          /**********************************************************************************
+   31          * Function Name  : mDelaymS
+   32          * Description    : 延时指定毫秒时间,根据单片机主频调整,不精确
+   33          * Input          : ms---延时时间值
+   34          * Output         : None
+   35          * Return         : None
+   36          *********************************************************************************/
+   37          void mDelaymS( uint8_t ms )
+   38          {
+   39   1        int i;  
+   40   1        while( ms -- ) 
+   41   1        {
+   42   2          for( i = 0; i != 20000; i++ );
+   43   2        }
+   44   1      }
+   45          
+   46          /**********************************************************************************
+   47          * Function Name  : xEndCH395Cmd
+   48          * Description    : 结束命令
+   49          * Input          : None
+   50          * Output         : None
+   51          * Return         : None
+   52          *********************************************************************************/
+   53          void xEndCH395Cmd( void )
+   54          { 
+   55   1      
+   56   1      }
+C251 COMPILER V5.60.0,  CH395PARA_HW                                                       23/03/23  08:54:30  PAGE 2   
+
+   57          
+   58           /**********************************************************************************
+   59          * Function Name  : CH395_PROT_INIT
+   60          * Description    : 接口初始化
+   61          * Input          : none
+   62          * Output         : None
+   63          * Return         : None
+   64          *********************************************************************************/
+   65          void CH395_PROT_INIT ( )
+   66          {
+   67   1        R8_SAFE_ACCESS_SIG = 0x57;    /* unlock step 1 */
+*** ERROR C67 IN LINE 67 OF Sources\ch395\CH395PARA_HW.C: 'R8_SAFE_ACCESS_SIG': undefined identifier
+   68   1        R8_SAFE_ACCESS_SIG = 0xA8;    /* unlock step 2 */
+*** ERROR C67 IN LINE 68 OF Sources\ch395\CH395PARA_HW.C: 'R8_SAFE_ACCESS_SIG': undefined identifier
+   69   1        R8_XBUS_CONFIG = RB_XBUS_ENABLE | RB_XBUS_ADDR_OE;    /* 外部总线使能 */
+*** ERROR C67 IN LINE 69 OF Sources\ch395\CH395PARA_HW.C: 'R8_XBUS_CONFIG': undefined identifier
+*** ERROR C67 IN LINE 69 OF Sources\ch395\CH395PARA_HW.C: 'RB_XBUS_ENABLE': undefined identifier
+*** ERROR C67 IN LINE 69 OF Sources\ch395\CH395PARA_HW.C: 'RB_XBUS_ADDR_OE': undefined identifier
+   70   1        R8_XBUS_SETUP_HOLD = 0x04;    /* 1 setup clocks */
+*** ERROR C67 IN LINE 70 OF Sources\ch395\CH395PARA_HW.C: 'R8_XBUS_SETUP_HOLD': undefined identifier
+   71   1        R8_SAFE_ACCESS_SIG = 0x00;    /* lock, to prevent unexpected writing */
+*** ERROR C67 IN LINE 71 OF Sources\ch395\CH395PARA_HW.C: 'R8_SAFE_ACCESS_SIG': undefined identifier
+   72   1      }
+   73          
+   74           /**********************************************************************************
+   75          * Function Name  : xWriteCH395Data
+   76          * Description    : 写命令
+   77          * Input          : 待写的命令
+   78          * Output         : None
+   79          * Return         : None
+   80          *********************************************************************************/
+   81          void xWriteCH395Cmd( uint8_t mCmd )  
+   82          {
+   83   1        *( Puint8_tV )0x00C00004 = mCmd;                  
+*** ERROR C67 IN LINE 83 OF Sources\ch395\CH395PARA_HW.C: 'Puint8_tV': undefined identifier
+*** ERROR C25 IN LINE 83 OF Sources\ch395\CH395PARA_HW.C: syntax error near '0x00C00004'
+*** WARNING C34 IN LINE 83 OF Sources\ch395\CH395PARA_HW.C: 'mCmd': missing declaration specifiers
+*** ERROR C53 IN LINE 83 OF Sources\ch395\CH395PARA_HW.C: redefinition of 'mCmd'
+   84   1        Delay_us(2);                      
+*** ERROR C25 IN LINE 84 OF Sources\ch395\CH395PARA_HW.C: syntax error near '2'
+   85   1      }
+*** ERROR C25 IN LINE 85 OF Sources\ch395\CH395PARA_HW.C: syntax error near '}'
+   86   1      
+   87   1       /**********************************************************************************
+   88   1      * Function Name  : xWriteCH395Data
+   89   1      * Description    : 写数据
+   90   1      * Input          : 待写的数据
+   91   1      * Output         : None
+   92   1      * Return         : None
+   93   1      *********************************************************************************/
+   94   1      void xWriteCH395Data( uint8_t mData ) 
+   95   1      {
+   96   2         
+   97   2        *( Puint8_tV )0x00C00000 = mData;
+*** ERROR C67 IN LINE 97 OF Sources\ch395\CH395PARA_HW.C: 'Puint8_tV': undefined identifier
+*** ERROR C25 IN LINE 97 OF Sources\ch395\CH395PARA_HW.C: syntax error near '0x00C00000'
+*** WARNING C34 IN LINE 97 OF Sources\ch395\CH395PARA_HW.C: 'mData': missing declaration specifiers
+   98   2          Delay_us(1 );     
+*** ERROR C25 IN LINE 98 OF Sources\ch395\CH395PARA_HW.C: syntax error near '1'
+   99   2      }
+*** ERROR C25 IN LINE 99 OF Sources\ch395\CH395PARA_HW.C: syntax error near '}'
+  100   2      
+  101   2       /**********************************************************************************
+  102   2      * Function Name  : xReadCH395Data
+  103   2      * Description    : 读数据
+  104   2      * Input          : None
+C251 COMPILER V5.60.0,  CH395PARA_HW                                                       23/03/23  08:54:30  PAGE 3   
+
+  105   2      * Output         : 读到的数据
+  106   2      * Return         : None
+  107   2      *********************************************************************************/
+  108   2      uint8_t xReadCH395Data( void ) 
+  109   2      {
+  110   3         uint8_t mData;
+  111   3         Delay_us(1 );    
+*** WARNING C95 IN LINE 111 OF Sources\ch395\CH395PARA_HW.C: 'Delay_us': too many actual parameters
+  112   3         mData = *( Puint8_tV )0x00C00000 ;
+*** ERROR C67 IN LINE 112 OF Sources\ch395\CH395PARA_HW.C: 'Puint8_tV': undefined identifier
+*** ERROR C25 IN LINE 112 OF Sources\ch395\CH395PARA_HW.C: syntax error near '0x00C00000'
+  113   3         return (mData);
+*** WARNING C34 IN LINE 113 OF Sources\ch395\CH395PARA_HW.C: 'mData': missing declaration specifiers
+*** ERROR C53 IN LINE 113 OF Sources\ch395\CH395PARA_HW.C: redefinition of 'mData'
+  114   3      }
+*** ERROR C25 IN LINE 114 OF Sources\ch395\CH395PARA_HW.C: syntax error near '}'
+  115   3      
+  116   3       /**********************************************************************************
+  117   3      * Function Name  : Query395Interrupt
+  118   3      * Description    : 查询中断
+  119   3      * Input          : None
+  120   3      * Output         : None
+  121   3      * Return         : 中断状态
+  122   3      *********************************************************************************/
+  123   3      uint8_t Query395Interrupt( void )
+  124   3      {
+  125   4          return( (R32_PB_PIN & PWM0) ? FALSE : TRUE );  
+*** ERROR C67 IN LINE 125 OF Sources\ch395\CH395PARA_HW.C: 'R32_PB_PIN': undefined identifier
+*** ERROR C67 IN LINE 125 OF Sources\ch395\CH395PARA_HW.C: 'PWM0': undefined identifier
+*** ERROR C67 IN LINE 125 OF Sources\ch395\CH395PARA_HW.C: 'FALSE': undefined identifier
+*** ERROR C67 IN LINE 125 OF Sources\ch395\CH395PARA_HW.C: 'TRUE': undefined identifier
+  126   4      }
+
+C251 COMPILATION COMPLETE.  4 WARNING(S),  24 ERROR(S)

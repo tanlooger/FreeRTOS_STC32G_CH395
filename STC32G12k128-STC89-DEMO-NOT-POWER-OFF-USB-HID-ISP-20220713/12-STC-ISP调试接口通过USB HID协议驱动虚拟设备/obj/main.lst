@@ -1,0 +1,306 @@
+C251 COMPILER V5.60.0,  main                                                               08/07/22  16:06:20  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE main
+OBJECT MODULE PLACED IN .\obj\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE src\main.c XSMALL INTR2 BROWSE DEBUG PRINT(.\obj\main.lst) OBJECT(.\ob
+                    -j\main.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* --- STC MCU Limited ------------------------------------------------*/
+    3          /* --- STC 1T Series MCU Demo Programme -------------------------------*/
+    4          /* --- Mobile: (86)13922805190 ----------------------------------------*/
+    5          /* --- Fax: 86-0513-55012956,55012947,55012969 ------------------------*/
+    6          /* --- Tel: 86-0513-55012928,55012929,55012966 ------------------------*/
+    7          /* --- Web: www.STCMCU.com --------------------------------------------*/
+    8          /* --- Web: www.STCMCUDATA.com  ---------------------------------------*/
+    9          /* --- QQ:  800003751 -------------------------------------------------*/
+   10          /* Èç¹ûÒªÔÚ³ÌÐòÖÐÊ¹ÓÃ´Ë´úÂë,ÇëÔÚ³ÌÐòÖÐ×¢Ã÷Ê¹ÓÃÁËSTCµÄ×ÊÁÏ¼°³ÌÐò            */
+   11          /*---------------------------------------------------------------------*/
+   12          
+   13          /*************  ¹¦ÄÜËµÃ÷    **************
+   14          
+   15          ±¾Àý³Ì»ùÓÚSTC32GºËÐÄ×ª½Ó°å£¨ÍÀÁúµ¶£©½øÐÐ±àÐ´²âÊÔ¡£
+   16          
+   17          Í¨¹ýUSBÁ¬½ÓSTC-ISP(V6.90ÒÔºó°æ±¾);
+   18          
+   19          STC-ISPµ÷ÊÔ½Ó¿ÚÀïÃæµÄÐéÄâ¼üÅÌÉÏµã»÷°´¼ü·¢ËÍÏàÓ¦µÄ¼üÖµµ½MCU;
+   20          
+   21          MCUÊÕµ½¼üÖµÖ´ÐÐ¶ÔÓ¦µÄ¹¦ÄÜ;
+   22          
+   23          ´ËÍâ³ÌÐòÑÝÊ¾Á½ÖÖ¸´Î»½øÈëUSBÏÂÔØÄ£Ê½µÄ·½·¨£º
+   24          1. Í¨¹ýÃ¿1ºÁÃëÖ´ÐÐÒ»´Î¡°KeyResetScan¡±º¯Êý£¬ÊµÏÖ³¤°´P3.2¿Ú°´¼ü´¥·¢MCU¸´Î»£¬½øÈëUSBÏÂÔØÄ£Ê½¡£
+   25             (Èç¹û²»Ï£Íû¸´Î»½øÈëUSBÏÂÔØÄ£Ê½µÄ»°£¬¿ÉÔÚ¸´Î»´úÂëÀï½« IAP_CONTR µÄbit6Çå0£¬Ñ¡Ôñ¸´Î»½øÓÃ»§³ÌÐòÇø)
+   26          2. Í¨¹ý¼ÓÔØ¡°stc_usb_hid_32g.lib¡±¿âº¯Êý£¬ÊµÏÖÊ¹ÓÃSTC-ISPÈí¼þ·¢ËÍÖ¸Áî´¥·¢MCU¸´Î»£¬½øÈëUSBÏÂÔØÄ£Ê½²¢×Ô¶¯ÏÂ
+             -ÔØ¡£
+   27          
+   28          ÏÂÔØÊ±, Ñ¡ÔñÊ±ÖÓ 24MHZ (ÓÃ»§¿É×ÔÐÐÐÞ¸ÄÆµÂÊ)¡£
+   29          
+   30          ******************************************/
+   31          
+   32          #include "stc.h"
+   33          #include "usb.h"
+   34          #include "vk.h"
+   35          #include "pic.h"
+   36          
+   37          void sys_init();
+   38          void DelayXms(int n);
+   39          
+   40          char *USER_DEVICEDESC = NULL;
+   41          char *USER_PRODUCTDESC = NULL;
+   42          
+   43          char *USER_STCISPCMD = "@STCISP#";                      //ÉèÖÃ×Ô¶¯¸´Î»µ½ISPÇøµÄÓÃ»§½Ó¿ÚÃüÁî
+   44          
+   45          BYTE xdata cod[8];
+   46          
+   47          void main()
+   48          {
+   49   1          sys_init();
+   50   1          usb_init();
+   51   1          EA = 1;
+   52   1      
+   53   1          while (1)
+   54   1          {
+   55   2              if (DeviceState != DEVSTATE_CONFIGURED)        //ÅÐ¶ÏUSBÉè±¸Ê¶±ðÊÇ·ñÍê³É
+   56   2                  continue;
+   57   2      
+C251 COMPILER V5.60.0,  main                                                               08/07/22  16:06:20  PAGE 2   
+
+   58   2              if (bUsbOutReady)
+   59   2              {
+   60   3                  if ((UsbOutBuffer[0] == 'K') &&
+   61   3                      (UsbOutBuffer[1] == 'E') &&
+   62   3                      (UsbOutBuffer[2] == 'Y') &&
+   63   3                      (UsbOutBuffer[3] == 'P'))
+   64   3                  {
+   65   4                      switch (UsbOutBuffer[5])
+   66   4                      {
+   67   5                      case VK_DIGIT_1:
+   68   5                          printf("%08lx", 0x1234abcdL);      //ÔÚÊýÂë¹ÜÉÏÏÔÊ¾×Ö·û´®
+   69   5                          break;
+   70   5                      case VK_DIGIT_2:
+   71   5                          SEG7_ShowLong(0x98765432, 16);     //ÔÚÊýÂë¹ÜÉÏÏÔÊ¾4×Ö½Ú³¤ÕûÐÍÊý
+   72   5                          break;
+   73   5                      case VK_DIGIT_3:
+   74   5                          SEG7_ShowFloat(3.1415);            //ÔÚÊýÂë¹ÜÉÏÏÔÊ¾IEEE754¸ñÊ½µ¥¾«¶È¸¡µãÊý
+   75   5                          break;
+   76   5                      case VK_DIGIT_4:
+   77   5                          cod[0] = 0x3f;
+   78   5                          cod[1] = 0x06;
+   79   5                          cod[2] = 0x5b;
+   80   5                          cod[3] = 0x4f;
+   81   5                          cod[4] = 0x66;
+   82   5                          cod[5] = 0x6d;
+   83   5                          cod[6] = 0x7d;
+   84   5                          cod[7] = 0x27;
+   85   5                          SEG7_ShowCode(cod);                //ÔÚÊýÂë¹ÜÉÏÖ±½ÓÏÔÊ¾Ëù¸øµÄ¶ÎÂë
+   86   5                          break;
+   87   5                      case VK_DIGIT_5:
+   88   5                          cod[0] = 0x01;    //ÆÁ±ÎÎ»£¬P0ÓÐÐ§
+   89   5                          cod[1] = 0xaa;    //P0×´Ì¬
+   90   5                          LED40_SendData(cod, 2);            //¿ØÖÆDIP40µÄ¸÷¸ö¹Ü½ÅÉÏLEDµÄ×´Ì¬
+   91   5                          break;
+   92   5                      case VK_DIGIT_6:
+   93   5                          cod[0] = 0x0f;    //ÆÁ±ÎÎ»£¬P0~P3ÓÐÐ§
+   94   5                          cod[1] = 0x12;    //P0×´Ì¬
+   95   5                          cod[2] = 0x34;    //P1×´Ì¬
+   96   5                          cod[3] = 0x56;    //P2×´Ì¬
+   97   5                          cod[4] = 0x78;    //P3×´Ì¬
+   98   5                          LED40_SendData(cod, 5);            //¿ØÖÆDIP40µÄ¸÷¸ö¹Ü½ÅÉÏLEDµÄ×´Ì¬
+   99   5                          break;
+  100   5                      case VK_DIGIT_7:
+  101   5                          cod[0] = 0x01;    //ÆÁ±ÎÎ»£¬P0ÓÐÐ§
+  102   5                          cod[1] = 0xaa;    //P0×´Ì¬
+  103   5                          LED64_SendData(cod, 2);            //¿ØÖÆDIP64µÄ¸÷¸ö¹Ü½ÅÉÏLEDµÄ×´Ì¬
+  104   5                          break;
+  105   5                      case VK_DIGIT_8:
+  106   5                          cod[0] = 0x0f;    //ÆÁ±ÎÎ»£¬P0~P3ÓÐÐ§
+  107   5                          cod[1] = 0x12;    //P0×´Ì¬
+  108   5                          cod[2] = 0x34;    //P1×´Ì¬
+  109   5                          cod[3] = 0x56;    //P2×´Ì¬
+  110   5                          cod[4] = 0x78;    //P3×´Ì¬
+  111   5                          LED64_SendData(cod, 5);            //¿ØÖÆDIP64µÄ¸÷¸ö¹Ü½ÅÉÏLEDµÄ×´Ì¬
+  112   5                          break;
+  113   5                      case VK_ALPHA_A:
+  114   5                          LCD12864_DisplayOff();             //¹Ø±ÕLCD12864µÄÏÔÊ¾
+  115   5                          break;
+  116   5                      case VK_ALPHA_B:
+  117   5                          LCD12864_DisplayOn();              //´ò¿ªLCD12864µÄÏÔÊ¾
+  118   5                          break;
+  119   5                      case VK_ALPHA_C:
+  120   5                          LCD12864_CursorOff();              //Òþ²ØLCD12864µÄ¹â±ê
+  121   5                          break;
+  122   5                      case VK_ALPHA_D:
+  123   5                          LCD12864_CursorOn();               //ÏÔÊ¾LCD12864µÄ¹â±ê
+C251 COMPILER V5.60.0,  main                                                               08/07/22  16:06:20  PAGE 3   
+
+  124   5                          break;
+  125   5                      case VK_ALPHA_E:
+  126   5                          LCD12864_CursorMoveLeft();         //¹â±êÏò×óÒÆ¶¯Ò»¸öµ¥Î»£¨16¸öÏñËØ£©
+  127   5                          break;
+  128   5                      case VK_ALPHA_F:
+  129   5                          LCD12864_CursorMoveRight();        //¹â±êÏòÓÒÒÆ¶¯Ò»¸öµ¥Î»£¨16¸öÏñËØ£©
+  130   5                          break;
+  131   5                      case VK_ALPHA_G:
+  132   5                          LCD12864_CursorReturnHome();       //¹â±ê»Øµ½×óÉÏ½Ç³õÊ¼Î»ÖÃ
+  133   5                          break;
+  134   5                      case VK_ALPHA_H:
+  135   5                          LCD12864_ScrollLeft();             //ÆÁÄ»Ïò×ó¹ö¶¯Ò»¸öµ¥Î»£¨16¸öÏñËØ£©
+  136   5                          break;
+  137   5                      case VK_ALPHA_I:
+  138   5                          LCD12864_ScrollRight();            //ÆÁÄ»ÏòÓÒ¹ö¶¯Ò»¸öµ¥Î»£¨16¸öÏñËØ£©
+  139   5                          break;
+  140   5                      case VK_ALPHA_J:
+  141   5                          LCD12864_ScrollUp(16);             //ÆÁÄ»ÏòÉÏ¹ö¶¯Ò»¸öµ¥Î»£¨16¸öÏñËØ£©
+  142   5                          break;
+  143   5                      case VK_ALPHA_K:
+  144   5                          LCD12864_AutoWrapOff();            //¹Ø±Õ×Ô¶¯»»ÐÐ¹¦ÄÜ
+  145   5                          break;
+  146   5                      case VK_ALPHA_L:
+  147   5                          LCD12864_AutoWrapOn();             //¿ªÆô×Ô¶¯»»ÐÐ¹¦ÄÜ
+  148   5                          break;
+  149   5                      case VK_ALPHA_M:
+  150   5                          LCD12864_ReverseLine(1);           //·´°×ÏÔÊ¾Ö¸¶¨µÄÐÐ
+  151   5                          break;
+  152   5                      case VK_ALPHA_N:
+  153   5                          LCD12864_DisplayClear();           //Çå³ýÏÔÊ¾
+  154   5                          break;
+  155   5                      case VK_ALPHA_O:
+  156   5                          LCD12864_ShowString(0, 0, "ÉîÛÚ¹úÐ¾ÈË¹¤ÖÇÄÜÓÐÏÞ¹«Ë¾");  //ÔÚLCD12864ÉÏÏÔÊ¾ASCIIÂëºÍ¼ò
+             -ÌåÖÐÎÄ×Ö·û
+  157   5                          break;
+  158   5                      case VK_ALPHA_P:
+  159   5                          LCD12864_ShowPicture(0, 0, 8, 64, (BYTE *)&LCD12864_IMG);  //ÔÚLCD12864ÆÁÄ»ÉÏÏÔÊ¾Í¼Æ¬
+  160   5                          break;
+  161   5                      case VK_ALPHA_Q:
+  162   5                          OLED12864_DisplayOff();            //¹Ø±ÕOLED12864µÄÏÔÊ¾
+  163   5                          break;
+  164   5                      case VK_ALPHA_R:
+  165   5                          OLED12864_DisplayOn();             //´ò¿ªOLED12864µÄÏÔÊ¾
+  166   5                          break;
+  167   5                      case VK_ALPHA_S:
+  168   5                          OLED12864_DisplayContent();        //ÏÔÊ¾ÆÁÄ»ÄÚÈÝ
+  169   5                          break;
+  170   5                      case VK_ALPHA_T:
+  171   5                          OLED12864_DisplayEntire();         //È«ÆÁµãÁÁ£¨ÓÃÓÚ²âÊÔ£©
+  172   5                          break;
+  173   5                      case VK_ALPHA_U:
+  174   5                          OLED12864_HorizontalMirror();      //Ë®Æ½¾µÏñÏÔÊ¾
+  175   5                          break;
+  176   5                      case VK_ALPHA_V:
+  177   5                          OLED12864_VerticalMirror();        //´¹Ö±¾µÏñÏÔÊ¾
+  178   5                          break;
+  179   5                      case VK_ALPHA_W:
+  180   5                          OLED12864_DisplayReverse();        //·´°×ÏÔÊ¾
+  181   5                          break;
+  182   5                      case VK_ALPHA_X:
+  183   5                          OLED12864_SetContrast(0x10);       //ÁÁ¶ÈÖµ£¨·¶Î§0¡«255£©
+  184   5                          break;
+  185   5                      case VK_ALPHA_Y:
+  186   5                          OLED12864_SetContrast(0x80);       //ÁÁ¶ÈÖµ£¨·¶Î§0¡«255£©
+  187   5                          break;
+  188   5                      case VK_ALPHA_Z:
+C251 COMPILER V5.60.0,  main                                                               08/07/22  16:06:20  PAGE 4   
+
+  189   5                          OLED12864_SetContrast(0xf0);       //ÁÁ¶ÈÖµ£¨·¶Î§0¡«255£©
+  190   5                          break;
+  191   5                      case VK_UP:
+  192   5                          //²ÎÊý1£º²ÎÓë¹öÆÁµÄÆðÊ¼Ò³£¨·¶Î§0¡«7£©
+  193   5                          //²ÎÊý2£º²ÎÓë¹öÆÁµÄ½áÊøÒ³£¨·¶Î§0¡«7£©
+  194   5                          //²ÎÊý3£º¹öÆÁµÄÖÜÆÚÖµ£¨ÖÜÆÚµ¥Î»ÎªºÁÃë£©
+  195   5                          OLED12864_ScrollUp(1, 6, 200);     //ÉèÖÃºÃ·½ÏòºóÍ¨¹ý¡°OLED12864_ScrollStart¡±Ö¸Áî¿ªÊ
+             -¼Ö´ÐÐ
+  196   5                          break;
+  197   5                      case VK_DOWN:
+  198   5                          OLED12864_ScrollStart();           //¿ªÊ¼Ö´ÐÐ¹ö¶¯²Ù×÷
+  199   5                          break;
+  200   5                      case VK_LEFT:
+  201   5                          //²ÎÊý1£º²ÎÓë¹öÆÁµÄÆðÊ¼Ò³£¨·¶Î§0¡«7£©
+  202   5                          //²ÎÊý2£º²ÎÓë¹öÆÁµÄ½áÊøÒ³£¨·¶Î§0¡«7£©
+  203   5                          //²ÎÊý3£º¹öÆÁµÄÖÜÆÚÖµ£¨ÖÜÆÚµ¥Î»ÎªºÁÃë£©
+  204   5                          OLED12864_ScrollLeft(0, 2, 200);   //ÉèÖÃºÃ·½ÏòºóÍ¨¹ý¡°OLED12864_ScrollStart¡±Ö¸Áî¿ªÊ
+             -¼Ö´ÐÐ
+  205   5                          break;
+  206   5                      case VK_RIGHT:
+  207   5                          //²ÎÊý1£º²ÎÓë¹öÆÁµÄÆðÊ¼Ò³£¨·¶Î§0¡«7£©
+  208   5                          //²ÎÊý2£º²ÎÓë¹öÆÁµÄ½áÊøÒ³£¨·¶Î§0¡«7£©
+  209   5                          //²ÎÊý3£º¹öÆÁµÄÖÜÆÚÖµ£¨ÖÜÆÚµ¥Î»ÎªºÁÃë£©
+  210   5                          OLED12864_ScrollRight(0, 2, 200);  //ÉèÖÃºÃ·½ÏòºóÍ¨¹ý¡°OLED12864_ScrollStart¡±Ö¸Áî¿ªÊ
+             -¼Ö´ÐÐ
+  211   5                          break;
+  212   5                      case VK_HOME:
+  213   5                          OLED12864_SetAddressMode(0);       //Ñ°Ö·Ä£Ê½£¨0£ºË®Æ½Ñ°Ö·£» 1£º´¹Ö±Ñ°Ö·£» 2£ºÒ³Ñ°Ö·£
+             -©
+  214   5                          break;
+  215   5                      case VK_END:
+  216   5                          OLED12864_SetAddressMode(1);       //Ñ°Ö·Ä£Ê½£¨0£ºË®Æ½Ñ°Ö·£» 1£º´¹Ö±Ñ°Ö·£» 2£ºÒ³Ñ°Ö·£
+             -©
+  217   5                          break;
+  218   5                      case VK_PRIOR:    //PageUp
+  219   5                          OLED12864_ScrollStop();            //Í£Ö¹Ö´ÐÐ¹ö¶¯²Ù×÷
+  220   5                          break;
+  221   5                      case VK_NEXT:     //PageDown
+  222   5                          OLED12864_ShowPicture(0, 0, 128, 8, (BYTE *)&OLED12864_IMG);  //ÔÚOLED12864ÆÁÄ»ÉÏÏÔÊ¾
+             -Í¼Æ¬
+  223   5                          break;
+  224   5                      }
+  225   4                  }
+  226   3                  else
+  227   3                  {
+  228   4                      memcpy(UsbInBuffer, UsbOutBuffer, 64);      //Ô­Â··µ»Ø, ÓÃÓÚ²âÊÔHID
+  229   4                      usb_IN();
+  230   4                  }
+  231   3                  usb_OUT_done();
+  232   3              }
+  233   2          }
+  234   1      }
+  235          
+  236          void sys_init()
+  237          {
+  238   1          WTST = 0;  //ÉèÖÃ³ÌÐòÖ¸ÁîÑÓÊ±²ÎÊý£¬¸³ÖµÎª0¿É½«CPUÖ´ÐÐÖ¸ÁîµÄËÙ¶ÈÉèÖÃÎª×î¿ì
+  239   1          EAXFR = 1; //À©Õ¹¼Ä´æÆ÷(XFR)·ÃÎÊÊ¹ÄÜ
+  240   1          CKCON = 0; //Ìá¸ß·ÃÎÊXRAMËÙ¶È
+  241   1      
+  242   1          P0M1 = 0x00;   P0M0 = 0x00;   //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+  243   1          P1M1 = 0x00;   P1M0 = 0x00;   //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+  244   1          P2M1 = 0x00;   P2M0 = 0x00;   //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+  245   1          P3M1 = 0x00;   P3M0 = 0x00;   //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+  246   1          P4M1 = 0x00;   P4M0 = 0x00;   //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+  247   1          P5M1 = 0x00;   P5M0 = 0x00;   //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+  248   1          P6M1 = 0x00;   P6M0 = 0x00;   //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+C251 COMPILER V5.60.0,  main                                                               08/07/22  16:06:20  PAGE 5   
+
+  249   1          P7M1 = 0x00;   P7M0 = 0x00;   //ÉèÖÃÎª×¼Ë«Ïò¿Ú
+  250   1      
+  251   1          P3M0 &= ~0x03;
+  252   1          P3M1 |= 0x03;
+  253   1      
+  254   1          IRC48MCR = 0x80;
+  255   1          while (!(IRC48MCR & 0x01));
+  256   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      2962     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =         8     ------
+  xdata-const size     =    ------     ------
+  edata size           =        12     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        64     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

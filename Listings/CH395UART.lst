@@ -1,0 +1,198 @@
+C251 COMPILER V5.60.0,  CH395UART                                                          24/03/23  00:55:40  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE CH395UART
+OBJECT MODULE PLACED IN .\Objects\CH395UART.obj
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE Sources\ch395\CH395UART.C XSMALL FUNCTIONS(REENTRANT) OPTIMIZE(4,SPEED
+                    -) BROWSE INCDIR(.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32G12K12
+                    -8;.\Sources\Driver\inc;.\Sources\Task\inc;.\Sources\ch395) DEBUG PRINT(.\Listings\CH395UART.lst) TABS(2) OBJECT(.\Object
+                    -s\CH395UART.obj) 
+
+stmt  level    source
+
+    1          /********************************** (C) COPYRIGHT *******************************
+    2          * File Name          : CH395UART.C
+    3          * Author             : WCH
+    4          * Version            : V1.1
+    5          * Date               : 2014/8/1
+    6          * Description        : CH395芯片 UART串行连接的硬件抽象层 V1.0
+    7          *                      
+    8          *******************************************************************************/
+    9          
+   10          #include "FreeRTOS.h"
+   11          #include "CH395INC.H"
+   12          
+   13          /* 硬件相关宏定义 */
+   14          /* 本例中的硬件连接方式如下(实际应用电路可以参照修改下述定义及子程序) */
+   15          /* 单片机的引脚    CH395芯片的引脚
+   16                TXD                  RXD
+   17                RXD                  TXD       */
+   18          #define CH395_INT_WIRE             INT1                          /* 假定CH395的INT#引脚,如果未连
+             -接那么也可以通过查询串口中断状态码实现 */
+   19          
+   20          #define UART_INIT_BAUDRATE         9600                          /* 默认通讯波特率9600bps,建议�
+             -�过硬件引脚设定直接选择更高的CH395的默认通讯波特率 */
+   21          #define UART_WORK_BAUDRATE         57600                         /* 正式通讯波特率57600bps */
+   22          
+   23          
+   24          /*******************************************************************************
+   25          * Function Name  : mDelayuS
+   26          * Description    : 延时指定微秒时间,根据单片机主频调整,不精确
+   27          * Input          : us---延时时间值
+   28          * Output         : None
+   29          * Return         : None
+   30          *******************************************************************************/
+   31          void mDelayuS(uint8_t us)
+   32          {
+   33   1          while(us --);                                                    /* MCS51@24MHz */
+   34   1      }
+   35          
+   36          /*******************************************************************************
+   37          * Function Name  : mDelaymS
+   38          * Description    : 延时指定毫秒时间,根据单片机主频调整,不精确
+   39          * Input          : ms---延时时间值
+   40          * Output         : None
+   41          * Return         : None
+   42          *******************************************************************************/
+   43          void mDelaymS(uint8_t ms)
+   44          {
+   45   1          while(ms --) 
+   46   1          {
+   47   2              mDelayuS(250);
+   48   2              mDelayuS(250);
+   49   2              mDelayuS(250);
+   50   2              mDelayuS(250);
+   51   2          }
+   52   1      }
+   53          
+   54          /*******************************************************************************
+C251 COMPILER V5.60.0,  CH395UART                                                          24/03/23  00:55:40  PAGE 2   
+
+   55          * Function Name  : CH395_PORT_INIT
+   56          * Description    : 硬件初始化部分
+   57          * Input          : None
+   58          * Output         : None
+   59          * Return         : None
+   60          void CH395_PORT_INIT(void)
+   61          {
+   62              // 如果单片机只有一个串口,那么必须禁止通过串口输出监控信息 
+   63              SCON = 0x50;
+   64              PCON = 0x80;
+   65          //  TL2 = RCAP2L = 0 - 18432000/32/UART_INIT_BAUDRATE;               // 18.432MHz晶振 
+   66              TL2 = RCAP2L = 0 - 24000000/32/UART_INIT_BAUDRATE;               // 24MHz晶振 
+   67          
+   68              // 建议通过硬件引脚设定直接选择更高的CH395的默认通讯波特率 
+   69              TH2 = RCAP2H = 0xFF;
+   70              T2CON = 0x34;                                                    // 定时器2用于串口的波特�
+             -�发生器 
+   71              RI = 0;
+   72          }
+   73          *******************************************************************************/
+   74          
+   75          /*******************************************************************************
+   76          * Function Name  : Set_MCU_BaudRate
+   77          * Description    : 设置单片机波特率
+   78          *                  将单片机切换到正式通讯波特率 
+   79          * Input          : None
+   80          * Output         : None
+   81          * Return         : None
+   82          void SetMCUBaudRate(void)                                
+   83          {
+   84          //  TL2 = RCAP2L = 0 - 18432000/32/UART_WORK_BAUDRATE;               // 18.432MHz晶振 
+   85              TL2 = RCAP2L = 0 - 24000000/32/UART_WORK_BAUDRATE;               // 24MHz晶振 
+   86              RI = 0;
+   87          }
+   88          *******************************************************************************/
+   89          
+   90          
+   91          /********************************************************************************
+   92          * Function Name  : xWriteCH395Cmd
+   93          * Description    : 向CH395写命令
+   94          * Input          : cmd 8位的命令码
+   95          * Output         : None
+   96          * Return         : None
+   97          *******************************************************************************/
+   98          void xWriteCH395Cmd(uint8_t cmd)                                      
+   99          {
+  100   1          TI = 0;
+  101   1          SBUF = SER_SYNC_CODE1;                                           // 启动操作的第1个串口同�
+             -�码
+  102   1          while(TI == 0);
+  103   1          TI = 0;
+  104   1          SBUF = SER_SYNC_CODE2;                                           // 启动操作的第2个串口同�
+             -�码 
+  105   1          while(TI == 0);
+  106   1          TI = 0;
+  107   1          SBUF = cmd;                                                      // 串口输出 
+  108   1          while(TI == 0);
+  109   1          RI = 0;                                                                 
+  110   1      }
+  111          
+  112          /********************************************************************************
+  113          * Function Name  : xWriteCH395Data
+  114          * Description    : 向CH395写数据
+  115          * Input          : mdata 8位数据
+  116          * Output         : None
+  117          * Return         : None
+C251 COMPILER V5.60.0,  CH395UART                                                          24/03/23  00:55:40  PAGE 3   
+
+  118          *******************************************************************************/
+  119          void  xWriteCH395Data(uint8_t mdata)
+  120          {                                                                    /* 向CH395写数据 */
+  121   1          TI = 0;
+  122   1          SBUF = mdata;                                                    /* 串口输出 */
+  123   1          while(TI == 0);
+  124   1      }
+  125          
+  126          /********************************************************************************
+  127          * Function Name  : xReadCH395Data
+  128          * Description    : 从CH395读数据
+  129          * Input          : None
+  130          * Output         : None
+  131          * Return         : 8位数据
+  132          *******************************************************************************/
+  133          uint8_t  xReadCH395Data(void)                                          /* 从CH395读数据 */
+  134          {
+  135   1          UINT32 i;
+  136   1          
+  137   1          for(i = 0; i < 500000; i ++) 
+  138   1          {  
+  139   2              /* 计数防止超时 */
+  140   2              if(RI) 
+  141   2              {  
+  142   3                  /* 串口接收到 */
+  143   3                  RI = 0;
+  144   3                  return(SBUF);                                            /* 串口输入 */
+  145   3              }
+  146   2          }
+  147   1          return(0);                                                       /* 不应该发生的情况 */
+  148   1      }
+  149          
+  150          #define xEndCH395Cmd()     {}                                        /* 命令结束，仅在SPI模式下
+             -有效 */
+  151          
+  152          /**************************** endfile *************************************/
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       126     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

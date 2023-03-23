@@ -6,7 +6,7 @@ $CASE
 ;
 ; '.\Objects\port.SRC' generated from 'Sources\FreeRTOS\portable\STC32G12K128\port.c'
 ; COMPILER INVOKED BY:
-;        C:\Keil_v5\C251\BIN\C251.EXE Sources\FreeRTOS\portable\STC32G12K128\port.c XSMALL FUNCTIONS(REENTRANT) OPTIMIZE(4,SPEED) BROWSE INCDIR(.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32G12K128;.\Sources\Driver\inc;.\Sources\Task\inc;.\Sources\Driver\ch395) DEBUG PRINT(.\Listings\port.lst) TABS(2) SRC(.\Objects\port.SRC) 
+;        C:\Keil_v5\C251\BIN\C251.EXE Sources\FreeRTOS\portable\STC32G12K128\port.c XSMALL FUNCTIONS(REENTRANT) OPTIMIZE(4,SPEED) BROWSE INCDIR(.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32G12K128;.\Sources\Driver\inc;.\Sources\Task\inc;.\Sources\ch395) DEBUG PRINT(.\Listings\port.lst) TABS(2) SRC(.\Objects\port.SRC) 
 ;
                 NAME port
 

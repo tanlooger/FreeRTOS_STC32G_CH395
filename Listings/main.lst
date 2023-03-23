@@ -1,0 +1,239 @@
+C251 COMPILER V5.60.0,  main                                                               24/03/23  00:55:23  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE main
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE Sources\User\main.c XSMALL FUNCTIONS(REENTRANT) OPTIMIZE(4,SPEED) BROW
+                    -SE INCDIR(.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32G12K128;.\So
+                    -urces\Driver\inc;.\Sources\Task\inc;.\Sources\ch395) DEBUG PRINT(.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+                    - 
+
+stmt  level    source
+
+    1          
+    2          /*
+    3           * FreeRTOS STC port V1.0.2
+    4           * 
+    5           * STC32G12K128功能简介：
+    6           *    2组 CAN, 3组Lin, USB, 32位 8051, RMB5,
+    7           *    高精准12位ADC, DMA 支持(TFT彩屏, ADC, 4组串口, SPI, I2C )
+    8           *  
+    9           *  各位用户在后续的使用过程中，如果发现有不正确的地方或者
+   10           *  有可改善的地方，请和STC联系，由STC官方进行统一修改并更新版本
+   11           *
+   12           *  若您的代码或文章中需要引用本程序包中的部分移植代码，请在您的
+   13           *  代码或文章中注明参考或使用了STC的FreeRTOS的移植代码
+   14          */
+   15          
+   16          #include "FreeRTOS.h"
+   17          #include "task.h"
+   18          #include "System_init.h"
+   19          
+   20          #include "display.h"
+   21          #include "rtc.h"
+   22          #include "ntc.h"
+   23          #include "adckey.h"
+   24          #include "uart2_3.h"
+   25          #include "MatrixKey.h"
+   26          #include "i2c_ps.h"
+   27          #include "pwmb.h"
+   28          //#include "ch395.h"
+   29          //#include "task_uart1.h"
+   30          #include <STC32G.H>
+   31          #include "usb.h"
+   32          
+   33          
+   34          
+   35          
+   36          
+   37          
+   38          
+   39              //P3.2口按键复位所需变量
+   40              bit Key_Flag;
+   41              u16 Key_cnt;
+   42          
+   43          
+   44          void KeyResetScan(void);
+   45          
+   46          void vSystemInit( void );
+   47          
+   48          //void timer4_int (void) interrupt 1 //1毫秒中断函数
+   49          //{
+   50            //P3.2口按健触发软件复位，进入USB下载模式
+   51            //KeyResetScan();
+   52          //}
+   53          
+   54          
+   55          
+   56          void main( void )
+C251 COMPILER V5.60.0,  main                                                               24/03/23  00:55:23  PAGE 2   
+
+   57          {
+   58   1        //USB调试及复位所需定义
+   59   1          //char *USER_DEVICEDESC = NULL;
+   60   1          //char *USER_PRODUCTDESC = NULL;
+   61   1          //char *USER_STCISPCMD = "@STCISP#";//设置自动复位到ISP区的用户接口命令
+   62   1          //USB调试及复位所需代码
+   63   1          //P3M0 &= ~0x03;
+   64   1          //P3M1 |=0x03;
+   65   1          //IRC48MCR = 0x80;
+   66   1          //while(!(IRC48MCR & 0x01));
+   67   1          //usb_init();
+   68   1          //EA=1; //打开总中断 
+   69   1          //EUSB = 1;   //IE2相关的中断位操作使能后，需要重新设置EUSB
+   70   1          //USB调试及复位所需代码，放在循环函数里
+   71   1          //if(bUsbOutReady) {usb_OUT_done();}
+   72   1        
+   73   1      
+   74   1      
+   75   1      
+   76   1        
+   77   1          /* 系统初始化 */
+   78   1          vSystemInit();
+   79   1        
+   80   1          //InitCH395InfParam();  /* 初始化CH395相关变量 */
+   81   1        
+   82   1            
+   83   1      
+   84   1      
+   85   1      
+   86   1      
+   87   1      
+   88   1        /* 创建任务 */
+   89   1        /*
+   90   1          xTaskCreate((TaskFunction_t )vDisplayTask,
+   91   1                      (const char*    )"DISPLAY",
+   92   1                      (uint16_t       )configDEFAULT_STACK_SIZE,
+   93   1                      (void*          )NULL,
+   94   1                      (UBaseType_t    )(configDEFAULT_PRIORITIES + 1),
+   95   1                      (TaskHandle_t*  )NULL);
+   96   1          xTaskCreate((TaskFunction_t )vRtcTask,
+   97   1                      (const char*    )"RTC",
+   98   1                      (uint16_t       )configDEFAULT_STACK_SIZE,
+   99   1                      (void*          )NULL,
+  100   1                      (UBaseType_t    )(configDEFAULT_PRIORITIES + 1),
+  101   1                      (TaskHandle_t*  )NULL);
+  102   1          xTaskCreate((TaskFunction_t )vAdcKeyTask,
+  103   1                      (const char*    )"ADCKEY",
+  104   1                      (uint16_t       )configDEFAULT_STACK_SIZE,
+  105   1                      (void*          )NULL,
+  106   1                      (UBaseType_t    )(configDEFAULT_PRIORITIES),
+  107   1                      (TaskHandle_t*  )NULL);
+  108   1          xTaskCreate((TaskFunction_t )vNtcTask,
+  109   1                      (const char*    )"NTC",
+  110   1                      (uint16_t       )configDEFAULT_STACK_SIZE,
+  111   1                      (void*          )NULL,
+  112   1                      (UBaseType_t    )(configDEFAULT_PRIORITIES),
+  113   1                      (TaskHandle_t*  )NULL);
+  114   1          xTaskCreate((TaskFunction_t )vMatrixKeyTask,
+  115   1                      (const char*    )"MatrixKey",
+  116   1                      (uint16_t       )configDEFAULT_STACK_SIZE,
+  117   1                      (void*          )NULL,
+  118   1                      (UBaseType_t    )(configDEFAULT_PRIORITIES),
+  119   1                      (TaskHandle_t*  )NULL);
+  120   1          xTaskCreate((TaskFunction_t )vI2C_PsTask,
+  121   1                      (const char*    )"I2C_PS",
+  122   1                      (uint16_t       )configDEFAULT_STACK_SIZE,
+C251 COMPILER V5.60.0,  main                                                               24/03/23  00:55:23  PAGE 3   
+
+  123   1                      (void*          )NULL,
+  124   1                      (UBaseType_t    )(configDEFAULT_PRIORITIES),
+  125   1                      (TaskHandle_t*  )NULL);
+  126   1          xTaskCreate((TaskFunction_t )vPWMB_LedTask,
+  127   1                      (const char*    )"PWMB_LED",
+  128   1                      (uint16_t       )configDEFAULT_STACK_SIZE,
+  129   1                      (void*          )NULL,
+  130   1                      (UBaseType_t    )(configDEFAULT_PRIORITIES),
+  131   1                      (TaskHandle_t*  )NULL);
+  132   1                      */
+  133   1      
+  134   1                      
+  135   1              xTaskCreate((TaskFunction_t )vUart2_3Task,
+  136   1                      (const char*    )"UART2_3",
+  137   1                      (uint16_t       )configDEFAULT_STACK_SIZE,
+  138   1                      (void*          )1000,  //注意pvParameters参数传地址或者立即数时只有低24�
+             -��是有效位，最高8位编译时会自动填0. 可通过变量或者常量传送32字节数据.
+  139   1                      (UBaseType_t    )(configDEFAULT_PRIORITIES),
+  140   1                      (TaskHandle_t*  )NULL);
+  141   1                      
+  142   1                      
+  143   1                      /*
+  144   1          xTaskCreate((TaskFunction_t )vUart1Task,
+  145   1                      (const char*    )"UART1",
+  146   1                      (uint16_t       )configDEFAULT_STACK_SIZE,
+  147   1                      (void*          )1000,  //注意pvParameters参数传地址或者立即数时只有低24�
+             -��是有效位，最高8位编译时会自动填0. 可通过变量或者常量传送32字节数据.
+  148   1                      (UBaseType_t    )(configDEFAULT_PRIORITIES),
+  149   1                      (TaskHandle_t*  )NULL);
+  150   1                      */
+  151   1      
+  152   1          /* 启动任务调度器开始任务调度 */
+  153   1          vTaskStartScheduler();
+  154   1      
+  155   1          /* 正常情况下不会运行到此处 */
+  156   1          while (1);
+  157   1      }
+  158          
+  159          
+  160          
+  161          
+  162          
+  163          void KeyResetScan(void)
+  164          {
+  165   1          if(!P32)
+  166   1          {
+  167   2            if (!Key_Flag) {
+  168   3              Key_cnt++;
+  169   3              //连续1000ms有效按键检测
+  170   3              if (Key_cnt >= 1000)
+  171   3              {
+  172   4                Key_Flag = 1; //设置按键状态，防止重复触发
+  173   4      
+  174   4      
+  175   4                USBCON = 0x00;    //清除USB设置
+  176   4                USBCLK = 0x00;
+  177   4                 IRC48MCR = 0x00;
+  178   4      
+  179   4      
+  180   4                //delay_ms(10);
+  181   4                vTaskDelay(10);
+  182   4                IAP_CONTR= 0x60;  //触发软件复位，从ISP开始执行
+  183   4                while (1);
+  184   4              }
+  185   3            }
+  186   2          }
+C251 COMPILER V5.60.0,  main                                                               24/03/23  00:55:23  PAGE 4   
+
+  187   1          else
+  188   1          {
+  189   2            Key_cnt = 0; 
+  190   2            Key_Flag=0;
+  191   2          }
+  192   1      }
+  193          
+  194          
+  195          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       106     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =         2     ------
+  bit size             =         1     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =         8     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -21,11 +21,11 @@ Target DLL:      STCMON251.DLL V0, 1, 0, 7
 Dialog DLL:      TCORE51.DLL V2.66.4.0
  
 <h2>Project:</h2>
-Y:\STC32G12K128\FreeRTOS-STC32G-CORE-V1.0.2-Library-DemoCode-20220817\FreeRTOS_STC32G_Demo.uvproj
-Project File Date:  03/13/2023
+\\Mac\Home\Documents\FreeRTOS_STC32G_CH395\FreeRTOS_STC32G_CH395.uvproj
+Project File Date:  03/23/2023
 
 <h2>Output:</h2>
-Rebuild target 'FreeRTOS_STC32G_Demo'
+Rebuild target 'FreeRTOS_STC32G_CH395'
 compiling croutine.c...
 compiling event_groups.c...
 compiling list.c...
@@ -47,7 +47,6 @@ compiling ntc.c...
 compiling pwmb.c...
 compiling rtc.c...
 compiling uart2_3.c...
-compiling task_uart1.c...
 compiling STC32G_ADC.c...
 compiling STC32G_CAN.c...
 compiling STC32G_Clock.c...
@@ -86,43 +85,13 @@ compiling STC32G_Timer_Isr.c...
 compiling STC32G_UART_Isr.c...
 compiling CH395UART.C...
 compiling CH395CMD.C...
-Sources\Driver\ch395\CH395CMD.C(76): warning C140: 'xReadCH395Data' undefined; assuming 'extern int xReadCH395Data()'
-Sources\Driver\ch395\CH395CMD.C(146): warning C140: 'mDelaymS' undefined; assuming 'extern int mDelaymS()'
-Sources\Driver\ch395\CH395CMD.C(146): warning C95: 'mDelaymS': too many actual parameters
-Sources\Driver\ch395\CH395CMD.C(251): warning C95: 'mDelaymS': too many actual parameters
-Sources\Driver\ch395\CH395CMD.C(587): warning C95: 'mDelaymS': too many actual parameters
-Sources\Driver\ch395\CH395CMD.C(611): warning C95: 'mDelaymS': too many actual parameters
-Sources\Driver\ch395\CH395CMD.C(635): warning C95: 'mDelaymS': too many actual parameters
-Sources\Driver\ch395\CH395CMD.C(659): warning C95: 'mDelaymS': too many actual parameters
-Sources\Driver\ch395\CH395CMD.C(683): warning C95: 'mDelaymS': too many actual parameters
-Sources\Driver\ch395\CH395CMD.C(752): warning C95: 'mDelaymS': too many actual parameters
-Sources\Driver\ch395\CH395CMD.C(821): warning C95: 'mDelaymS': too many actual parameters
-Sources\Driver\ch395\CH395CMD.C(839): warning C95: 'mDelaymS': too many actual parameters
-Sources\Driver\ch395\CH395CMD.C(866): warning C95: 'mDelaymS': too many actual parameters
-Sources\Driver\ch395\CH395CMD.C(889): warning C95: 'mDelaymS': too many actual parameters
-Sources\Driver\ch395\CH395CMD.C(956): warning C188: 'parameter 3': value truncated
+compiling CH395.C...
+compiling HTTTPS.C...
 linking...
-*** ERROR L104: MULTIPLE PUBLIC DEFINITIONS
-    SYMBOL:  Sec_Cnt
-    MODULE:  .\Objects\task_uart1.obj (task_uart1)
-   DEFINED:  .\Objects\uart2_3.obj (uart2_3)
-*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
-    SYMBOL:  TX1_write1buff?_
-    MODULE:  .\Objects\task_uart1.obj (task_uart1)
-*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
-    SYMBOL:  TX1_write1buff?_
-    MODULE:  .\Objects\task_uart1.obj (task_uart1)
-    ADDRESS: FF28EEH
-*** WARNING L25: DATA TYPES DIFFERENT
-    SYMBOL:  mDelaymS?_
-    MODULE:  .\Objects\CH395CMD.obj (CH395CMD)
-   DEFINED:  .\Objects\CH395UART.obj (CH395UART)
-*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
-    SYMBOL:  xReadCH395Data?_
-    MODULE:  .\Objects\CH395CMD.obj (CH395CMD)
-Program Size: data=15.3 edata+hdata=3685 xdata=0 const=335 code=15096
-Target not created.
-Build Time Elapsed:  00:00:26
+Program Size: data=15.4 edata+hdata=3861 xdata=7051 const=4141 code=10003
+creating hex file from ".\Objects\FreeRTOS_Demo"...
+".\Objects\FreeRTOS_Demo" - 0 Error(s), 0 Warning(s).
+Build Time Elapsed:  00:00:24
 </pre>
 </body>
 </html>

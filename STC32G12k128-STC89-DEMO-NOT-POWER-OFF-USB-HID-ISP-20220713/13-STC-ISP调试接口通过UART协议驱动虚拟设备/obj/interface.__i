@@ -1,0 +1,1 @@
+"src\interface.c" XSMALL INTR2 BROWSE DEBUG PRINT(.\obj\interface.lst) OBJECT(.\obj\interface.obj)

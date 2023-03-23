@@ -1,0 +1,1145 @@
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE CH395CMD
+OBJECT MODULE PLACED IN .\Objects\CH395CMD.obj
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE Sources\ch395\CH395CMD.C XSMALL FUNCTIONS(REENTRANT) OPTIMIZE(4,SPEED)
+                    - BROWSE INCDIR(.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32G12K128
+                    -;.\Sources\Driver\inc;.\Sources\Task\inc;.\Sources\ch395) DEBUG PRINT(.\Listings\CH395CMD.lst) TABS(2) OBJECT(.\Objects\
+                    -CH395CMD.obj) 
+
+stmt  level    source
+
+    1          /********************************** (C) COPYRIGHT *******************************
+    2          * File Name          : CH395CMD.C
+    3          * Author             : WCH
+    4          * Version            : V1.1
+    5          * Date               : 2014/8/1
+    6          * Description        : CH395芯片命令接口文件
+    7          *                      
+    8          *******************************************************************************/
+    9          
+   10          /* 头文件包含*/
+   11          #include "CH395INC.H"
+   12          #include "ch395cmd.h"
+   13          #include "CH395UART.h"
+   14          
+   15          /********************************************************************************
+   16          * Function Name  : CH395CMDReset
+   17          * Description    : 复位CH395芯片
+   18          * Input          : None
+   19          * Output         : None
+   20          * Return         : None
+   21          *******************************************************************************/
+   22          void CH395CMDReset(void)
+   23          {
+   24   1          xWriteCH395Cmd(CMD00_RESET_ALL);
+   25   1          ////xEndCH395Cmd();
+   26   1      }
+   27          
+   28          /*******************************************************************************
+   29          * Function Name  : CH395CMDSleep
+   30          * Description    : 使CH395进入睡眠状态
+   31          * Input          : None
+   32          * Output         : None
+   33          * Return         : None
+   34          *******************************************************************************/
+   35          void CH395CMDSleep(void)
+   36          {
+   37   1          xWriteCH395Cmd(CMD00_ENTER_SLEEP);
+   38   1          ////xEndCH395Cmd();
+   39   1      }
+   40          
+   41          /********************************************************************************
+   42          * Function Name  : CH395CMDSleep
+   43          * Description    : 获取芯片以及固件版本号，1字节，高四位表示芯片版本，
+   44                             低四位表示固件版本
+   45          * Input          : None
+   46          * Output         : None
+   47          * Return         : 1字节芯片及固件版本号
+   48          *******************************************************************************/
+   49          UINT8 CH395CMDGetVer(void)
+   50          {
+   51   1          UINT8 i;
+   52   1          xWriteCH395Cmd(CMD01_GET_IC_VER);
+   53   1          i = xReadCH395Data();
+   54   1          ////xEndCH395Cmd();
+   55   1          return i;
+   56   1      }
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 2   
+
+   57          
+   58          /********************************************************************************
+   59          * Function Name  : CH395CMDCheckExist
+   60          * Description    : 测试命令，用于测试硬件以及接口通讯
+   61          * Input          : testdata 1字节测试数据
+   62          * Output         : None
+   63          * Return         : 硬件OK，返回 testdata按位取反
+   64          *******************************************************************************/
+   65          UINT8 CH395CMDCheckExist(UINT8 testdata)
+   66          {
+   67   1          UINT8 i;
+   68   1      
+   69   1          xWriteCH395Cmd(CMD11_CHECK_EXIST);
+   70   1          xWriteCH395Data(testdata);
+   71   1          i = xReadCH395Data();
+   72   1          //xEndCH395Cmd();
+   73   1          return i;
+   74   1      }
+   75          
+   76          /********************************************************************************
+   77          * Function Name  : CH395CMDSetPHY
+   78          * Description    : 设置PHY，主要设置CH395 PHY为100/10M 或者全双工半双工，CH395默
+   79                              为自动协商。
+   80          * Input          : phystat 参考PHY 命令参数/状态
+   81          * Output         : None
+   82          * Return         : None
+   83          *******************************************************************************/
+   84          void CH395CMDSetPHY(UINT8 phystat)
+   85          {
+   86   1          xWriteCH395Cmd(CMD10_SET_PHY);
+   87   1          xWriteCH395Data(phystat);
+   88   1          ////xEndCH395Cmd();
+   89   1      }
+   90          
+   91          /*******************************************************************************
+   92          * Function Name  : CH395CMDGetPHYStatus
+   93          * Description    : 获取PHY的状态
+   94          * Input          : None
+   95          * Output         : None
+   96          * Return         : 当前CH395PHY状态，参考PHY参数/状态定义
+   97          *******************************************************************************/
+   98          UINT8 CH395CMDGetPHYStatus(void)
+   99          {
+  100   1          UINT8 i;
+  101   1      
+  102   1          xWriteCH395Cmd(CMD01_GET_PHY_STATUS);
+  103   1          i = xReadCH395Data();
+  104   1          ////xEndCH395Cmd();
+  105   1          return i;
+  106   1      }
+  107          
+  108          /*******************************************************************************
+  109          * Function Name  : CH395CMDGetGlobIntStatus
+  110          * Description    : 获取全局中断状态，收到此命令CH395自动取消中断，0x43及以下版�
+             -�使用
+  111          * Input          : None
+  112          * Output         : None
+  113          * Return         : 返回当前的全局中断状态
+  114          *******************************************************************************/
+  115          UINT8 CH395CMDGetGlobIntStatus(void)
+  116          {
+  117   1          UINT8 init_status;
+  118   1      
+  119   1          xWriteCH395Cmd(CMD01_GET_GLOB_INT_STATUS);
+  120   1          init_status = xReadCH395Data();
+  121   1          ////xEndCH395Cmd();
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 3   
+
+  122   1          return  init_status;
+  123   1      }
+  124          
+  125          /********************************************************************************
+  126          * Function Name  : CH395CMDInitCH395
+  127          * Description    : 初始化CH395芯片。
+  128          * Input          : None
+  129          * Output         : None
+  130          * Return         : 返回执行结果
+  131          *******************************************************************************/
+  132          UINT8 CH395CMDInitCH395(void)
+  133          {
+  134   1          UINT8 i = 0;
+  135   1          UINT8 s = 0;
+  136   1      
+  137   1          xWriteCH395Cmd(CMD0W_INIT_CH395);
+  138   1          ////xEndCH395Cmd();
+  139   1          while(1)
+  140   1          {
+  141   2              mDelaymS(10);                                                 /* 延时查询，建议2MS以上*/
+  142   2              s = CH395GetCmdStatus();                                     /* 不能过于频繁查询*/
+  143   2              if(s !=CH395_ERR_BUSY)break;                                 /* 如果CH395芯片返回忙状态*
+             -/
+  144   2              if(i++ > 200)return CH395_ERR_UNKNOW;                        /* 超时退出,本函数需要500MS
+             -以上执行完毕 */
+  145   2          }
+  146   1          return s;
+  147   1      }
+  148          
+  149          /********************************************************************************
+  150          * Function Name  : CH395CMDSetUartBaudRate
+  151          * Description    : 设置CH395串口波特率，仅在串口模式下有效
+  152          * Input          : baudrate 串口波特率
+  153          * Output         : None
+  154          * Return         : None
+  155          *******************************************************************************/
+  156          void CH395CMDSetUartBaudRate(UINT32 baudrate)
+  157          {
+  158   1        UINT8 i;
+  159   1          xWriteCH395Cmd(CMD31_SET_BAUDRATE);
+  160   1          xWriteCH395Data((UINT8)baudrate);
+  161   1          xWriteCH395Data((UINT8)((UINT16)baudrate >> 8));
+  162   1          xWriteCH395Data((UINT8)(baudrate >> 16));
+  163   1        i = xReadCH395Data();
+  164   1          ////xEndCH395Cmd();
+  165   1      }
+  166          
+  167          /*******************************************************************************
+  168          * Function Name  : CH395GetCmdStatus
+  169          * Description    : 获取命令执行状态，某些命令需要等待命令执行结果
+  170          * Input          : None
+  171          * Output         : None
+  172          * Return         : 返回上一条命令执行状态
+  173          *******************************************************************************/
+  174          UINT8 CH395GetCmdStatus(void)
+  175          {
+  176   1          UINT8 i;
+  177   1      
+  178   1          xWriteCH395Cmd(CMD01_GET_CMD_STATUS);
+  179   1          i = xReadCH395Data();
+  180   1          ////xEndCH395Cmd();
+  181   1          return i;
+  182   1      }
+  183          
+  184          /********************************************************************************
+  185          * Function Name  : CH395CMDSetIPAddr
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 4   
+
+  186          * Description    : 设置CH395的IP地址
+  187          * Input          : ipaddr 指IP地址
+  188          * Output         : None
+  189          * Return         : None
+  190          *******************************************************************************/
+  191          void CH395CMDSetIPAddr(UINT8 *ipaddr)
+  192          {
+  193   1          UINT8 i;
+  194   1      
+  195   1          xWriteCH395Cmd(CMD40_SET_IP_ADDR);
+  196   1          for(i = 0; i < 4;i++)xWriteCH395Data(*ipaddr++);
+  197   1          ////xEndCH395Cmd();
+  198   1      }
+  199          
+  200          /********************************************************************************
+  201          * Function Name  : CH395CMDSetGWIPAddr
+  202          * Description    : 设置CH395的网关IP地址
+  203          * Input          : ipaddr 指向网关IP地址
+  204          * Output         : None
+  205          * Return         : None
+  206          *******************************************************************************/
+  207          void CH395CMDSetGWIPAddr(UINT8 *gwipaddr)
+  208          {
+  209   1          UINT8 i;
+  210   1      
+  211   1          xWriteCH395Cmd(CMD40_SET_GWIP_ADDR);
+  212   1          for(i = 0; i < 4;i++)xWriteCH395Data(*gwipaddr++);
+  213   1          ////xEndCH395Cmd();
+  214   1      }
+  215          
+  216          /********************************************************************************
+  217          * Function Name  : CH395CMDSetMASKAddr
+  218          * Description    : 设置CH395的子网掩码，默认为255.255.255.0
+  219          * Input          : maskaddr 指子网掩码地址
+  220          * Output         : None
+  221          * Return         : None
+  222          *******************************************************************************/
+  223          void CH395CMDSetMASKAddr(UINT8 *maskaddr)
+  224          {
+  225   1          UINT8 i;
+  226   1      
+  227   1          xWriteCH395Cmd(CMD40_SET_MASK_ADDR);
+  228   1          for(i = 0; i < 4;i++)xWriteCH395Data(*maskaddr++);
+  229   1          //xEndCH395Cmd();
+  230   1      }
+  231          
+  232          /********************************************************************************
+  233          * Function Name  : CH395CMDSetMACAddr
+  234          * Description    : 设置CH395的MAC地址。
+  235          * Input          : amcaddr MAC地址指针
+  236          * Output         : None
+  237          * Return         : None
+  238          *******************************************************************************/
+  239          void CH395CMDSetMACAddr(UINT8 *amcaddr)
+  240          {
+  241   1          UINT8 i;
+  242   1      
+  243   1          xWriteCH395Cmd(CMD60_SET_MAC_ADDR);
+  244   1          for(i = 0; i < 6;i++)xWriteCH395Data(*amcaddr++);
+  245   1          //xEndCH395Cmd();
+  246   1          mDelaymS(100); 
+  247   1      }
+  248          
+  249          /********************************************************************************
+  250          * Function Name  : CH395CMDGetMACAddr
+  251          * Description    : 获取CH395的MAC地址。
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 5   
+
+  252          * Input          : amcaddr MAC地址指针
+  253          * Output         : None
+  254          * Return         : None
+  255          *******************************************************************************/
+  256          void CH395CMDGetMACAddr(UINT8 *amcaddr)
+  257          {
+  258   1          UINT8 i;
+  259   1      
+  260   1          xWriteCH395Cmd(CMD06_GET_MAC_ADDR);
+  261   1          for(i = 0; i < 6;i++)*amcaddr++ = xReadCH395Data();
+  262   1          //xEndCH395Cmd();
+  263   1       }
+  264          
+  265          /*******************************************************************************
+  266          * Function Name  : CH395CMDSetMACFilt
+  267          * Description    : 设置MAC过滤。
+  268          * Input          : filtype 参考 MAC过滤
+  269                             table0 Hash0
+  270                             table1 Hash1
+  271          * Output         : None
+  272          * Return         : None
+  273          *******************************************************************************/
+  274          void CH395CMDSetMACFilt(UINT8 filtype,UINT32 table0,UINT32 table1)
+  275          {
+  276   1          xWriteCH395Cmd(CMD90_SET_MAC_FILT);
+  277   1          xWriteCH395Data(filtype);
+  278   1          xWriteCH395Data((UINT8)table0);
+  279   1          xWriteCH395Data((UINT8)((UINT16)table0 >> 8));
+  280   1          xWriteCH395Data((UINT8)(table0 >> 16));
+  281   1          xWriteCH395Data((UINT8)(table0 >> 24));
+  282   1      
+  283   1          xWriteCH395Data((UINT8)table1);
+  284   1          xWriteCH395Data((UINT8)((UINT16)table1 >> 8));
+  285   1          xWriteCH395Data((UINT8)(table1 >> 16));
+  286   1          xWriteCH395Data((UINT8)(table1 >> 24));
+  287   1          //xEndCH395Cmd();
+  288   1      }
+  289          
+  290          /********************************************************************************
+  291          * Function Name  : CH395CMDGetUnreachIPPT
+  292          * Description    : 获取不可达信息 (IP,Port,Protocol Type)
+  293          * Input          : list 保存获取到的不可达
+  294                                  第1个字节为不可达代码，请参考 不可达代码(CH395INC.H)
+  295                                  第2个字节为IP包协议类型
+  296                                  第3-4字节为端口号
+  297                                  第4-8字节为IP地址
+  298          * Output         : None
+  299          * Return         : None
+  300          *******************************************************************************/
+  301          void CH395CMDGetUnreachIPPT(UINT8 *list)
+  302          {
+  303   1          UINT8 i;
+  304   1      
+  305   1          xWriteCH395Cmd(CMD08_GET_UNREACH_IPPORT);
+  306   1          for(i = 0; i < 8; i++)
+  307   1          {
+  308   2              *list++ = xReadCH395Data();
+  309   2          }   
+  310   1          //xEndCH395Cmd();
+  311   1      }
+  312          
+  313          /********************************************************************************
+  314          * Function Name  : CH395CMDGetRemoteIPP
+  315          * Description    : 获取远端的IP和端口地址，一般在TCP Server模式下使用
+  316          * Input          : sockindex Socket索引
+  317                             list 保存IP和端口
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 6   
+
+  318          * Output         : None
+  319          * Return         : None
+  320          *******************************************************************************/
+  321          void CH395CMDGetRemoteIPP(UINT8 sockindex,UINT8 *list)
+  322          {
+  323   1          UINT8 i;
+  324   1      
+  325   1          xWriteCH395Cmd(CMD06_GET_REMOT_IPP_SN);
+  326   1          xWriteCH395Data(sockindex);
+  327   1          for(i = 0; i < 6; i++)
+  328   1          {
+  329   2              *list++ = xReadCH395Data();
+  330   2          }   
+  331   1          //xEndCH395Cmd();
+  332   1      }
+  333          
+  334          /*******************************************************************************
+  335          * Function Name  : CH395SetSocketDesIP
+  336          * Description    : 设置socket n的目的IP地址
+  337          * Input          : sockindex Socket索引
+  338                             ipaddr 指向IP地址
+  339          * Output         : None
+  340          * Return         : None
+  341          *******************************************************************************/
+  342          void CH395SetSocketDesIP(UINT8 sockindex,UINT8 *ipaddr)
+  343          {
+  344   1          xWriteCH395Cmd(CMD50_SET_IP_ADDR_SN);
+  345   1          xWriteCH395Data(sockindex);
+  346   1          xWriteCH395Data(*ipaddr++);
+  347   1          xWriteCH395Data(*ipaddr++);
+  348   1          xWriteCH395Data(*ipaddr++);
+  349   1          xWriteCH395Data(*ipaddr++);
+  350   1          //xEndCH395Cmd();
+  351   1      }
+  352          
+  353          /*******************************************************************************
+  354          * Function Name  : CH395SetSocketProtType
+  355          * Description    : 设置socket 的协议类型
+  356          * Input          : sockindex Socket索引
+  357                             prottype 协议类型，请参考 socket协议类型定义(CH395INC.H)
+  358          * Output         : None
+  359          * Return         : None
+  360          *******************************************************************************/
+  361          void CH395SetSocketProtType(UINT8 sockindex,UINT8 prottype)
+  362          {
+  363   1          xWriteCH395Cmd(CMD20_SET_PROTO_TYPE_SN);
+  364   1          xWriteCH395Data(sockindex);
+  365   1          xWriteCH395Data(prottype);
+  366   1          //xEndCH395Cmd();
+  367   1      }
+  368          
+  369          /*******************************************************************************
+  370          
+  371          * Function Name  : CH395SetSocketDesPort
+  372          * Description    : 设置socket n的协议类型
+  373          * Input          : sockindex Socket索引
+  374                             desprot 2字节目的端口
+  375          * Output         : None
+  376          * Return         : None
+  377          *******************************************************************************/
+  378          void CH395SetSocketDesPort(UINT8 sockindex,UINT16 desprot)
+  379          {
+  380   1          xWriteCH395Cmd(CMD30_SET_DES_PORT_SN);
+  381   1          xWriteCH395Data(sockindex);
+  382   1          xWriteCH395Data((UINT8)desprot);
+  383   1          xWriteCH395Data((UINT8)(desprot >> 8));
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 7   
+
+  384   1          //xEndCH395Cmd();
+  385   1      }
+  386          
+  387          /*******************************************************************************
+  388          * Function Name  : CH395SetSocketSourPort
+  389          * Description    : 设置socket n的协议类型
+  390          * Input          : sockindex Socket索引
+  391                             desprot 2字节源端口
+  392          * Output         : None
+  393          * Return         : None
+  394          *******************************************************************************/
+  395          void CH395SetSocketSourPort(UINT8 sockindex,UINT16 surprot)
+  396          {
+  397   1          xWriteCH395Cmd(CMD30_SET_SOUR_PORT_SN);
+  398   1          xWriteCH395Data(sockindex);
+  399   1          xWriteCH395Data((UINT8)surprot);
+  400   1          xWriteCH395Data((UINT8)(surprot>>8));
+  401   1          //xEndCH395Cmd();
+  402   1      }
+  403          
+  404          /******************************************************************************
+  405          * Function Name  : CH395SetSocketIPRAWProto
+  406          * Description    : IP模式下，socket IP包协议字段
+  407          * Input          : sockindex Socket索引
+  408                             prototype IPRAW模式1字节协议字段
+  409          * Output         : None
+  410          * Return         : None
+  411          *******************************************************************************/
+  412          void CH395SetSocketIPRAWProto(UINT8 sockindex,UINT8 prototype)
+  413          {
+  414   1          xWriteCH395Cmd(CMD20_SET_IPRAW_PRO_SN);
+  415   1          xWriteCH395Data(sockindex);
+  416   1          xWriteCH395Data(prototype);
+  417   1          //xEndCH395Cmd();
+  418   1      }
+  419          
+  420          /********************************************************************************
+  421          * Function Name  : CH395EnablePing
+  422          * Description    : 开启/关闭 PING
+  423          * Input          : enable : 1  开启PING
+  424                                    ：0  关闭PING
+  425          * Output         : None
+  426          * Return         : None
+  427          *******************************************************************************/
+  428          void CH395EnablePing(UINT8 enable)
+  429          {
+  430   1          xWriteCH395Cmd(CMD01_PING_ENABLE);
+  431   1          xWriteCH395Data(enable);
+  432   1          //xEndCH395Cmd();
+  433   1      }
+  434          
+  435          
+  436          /********************************************************************************
+  437          * Function Name  : CH395SendData
+  438          * Description    : 向发送缓冲区写数据
+  439          * Input          : sockindex Socket索引
+  440                             databuf  数据缓冲区
+  441                             len   长度
+  442          * Output         : None
+  443          * Return         : None
+  444          *******************************************************************************/
+  445          void CH395SendData(UINT8 sockindex,UINT8 *databuf,UINT16 len)
+  446          {
+  447   1          UINT16 i;
+  448   1      
+  449   1          xWriteCH395Cmd(CMD30_WRITE_SEND_BUF_SN);
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 8   
+
+  450   1          xWriteCH395Data((UINT8)sockindex);
+  451   1          xWriteCH395Data((UINT8)len);
+  452   1          xWriteCH395Data((UINT8)(len>>8));
+  453   1         
+  454   1          for(i = 0; i < len; i++)
+  455   1          {
+  456   2              xWriteCH395Data(*databuf++);
+  457   2          }
+  458   1          //xEndCH395Cmd();
+  459   1      }
+  460          
+  461          /*******************************************************************************
+  462          * Function Name  : CH395GetRecvLength
+  463          * Description    : 获取接收缓冲区长度
+  464          * Input          : sockindex Socket索引
+  465          * Output         : None
+  466          * Return         : 返回接收缓冲区有效长度
+  467          *******************************************************************************/
+  468          UINT16 CH395GetRecvLength(UINT8 sockindex)
+  469          {
+  470   1          UINT16 i;
+  471   1      
+  472   1          xWriteCH395Cmd(CMD12_GET_RECV_LEN_SN);
+  473   1          xWriteCH395Data((UINT8)sockindex);
+  474   1          i = xReadCH395Data();
+  475   1          i = (UINT16)(xReadCH395Data()<<8) + i;
+  476   1          //xEndCH395Cmd();
+  477   1          return i;
+  478   1      }
+  479          
+  480          /*******************************************************************************
+  481          * Function Name  : CH395ClearRecvBuf
+  482          * Description    : 清除接收缓冲区
+  483          * Input          : sockindex Socket索引
+  484          * Output         : None
+  485          * Return         : None
+  486          *******************************************************************************/
+  487          void CH395ClearRecvBuf(UINT8 sockindex)
+  488          {
+  489   1          xWriteCH395Cmd(CMD10_CLEAR_RECV_BUF_SN);
+  490   1          xWriteCH395Data((UINT8)sockindex);
+  491   1          //xEndCH395Cmd();
+  492   1      }
+  493          
+  494          /********************************************************************************
+  495          * Function Name  : CH395GetRecvLength
+  496          * Description    : 读取接收缓冲区数据
+  497          * Input          : sockindex Socket索引
+  498                             len   长度
+  499                             pbuf  缓冲区
+  500          * Output         : None
+  501          * Return         : None
+  502          *******************************************************************************/
+  503          void CH395GetRecvData(UINT8 sockindex,UINT16 len,UINT8 *pbuf)
+  504          {
+  505   1          UINT16 i;
+  506   1          if(!len)return;
+  507   1          xWriteCH395Cmd(CMD30_READ_RECV_BUF_SN);
+  508   1          xWriteCH395Data(sockindex);
+  509   1          xWriteCH395Data((UINT8)len);
+  510   1          xWriteCH395Data((UINT8)(len>>8));
+  511   1          mDelayuS(1);
+  512   1          for(i = 0; i < len; i++)
+  513   1          {
+  514   2             *pbuf = xReadCH395Data();
+  515   2             pbuf++;
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 9   
+
+  516   2          }   
+  517   1          //xEndCH395Cmd();
+  518   1      }
+  519          
+  520          /********************************************************************************
+  521          * Function Name  : CH395CMDSetRetryCount
+  522          * Description    : 设置重试次数
+  523          * Input          : count 重试值，最大为20次
+  524          * Output         : None
+  525          * Return         : None
+  526          ********************************************************************************/
+  527          void CH395CMDSetRetryCount(UINT8 count)
+  528          {
+  529   1          xWriteCH395Cmd(CMD10_SET_RETRAN_COUNT);
+  530   1          xWriteCH395Data(count);
+  531   1          //xEndCH395Cmd();
+  532   1      }
+  533          
+  534          /********************************************************************************
+  535          * Function Name  : CH395CMDSetRetryPeriod
+  536          * Description    : 设置重试周期
+  537          * Input          : period 重试周期单位为毫秒，最大1000ms
+  538          * Output         : None
+  539          * Return         : None
+  540          *******************************************************************************/
+  541          void CH395CMDSetRetryPeriod(UINT16 period)
+  542          {
+  543   1          xWriteCH395Cmd(CMD10_SET_RETRAN_COUNT);
+  544   1          xWriteCH395Data((UINT8)period);
+  545   1          xWriteCH395Data((UINT8)(period>>8));
+  546   1          //xEndCH395Cmd();
+  547   1      }
+  548          
+  549          /********************************************************************************
+  550          * Function Name  : CH395CMDGetSocketStatus
+  551          * Description    : 获取socket
+  552          * Input          : None
+  553          * Output         : socket n的状态信息，第1字节为socket 打开或者关闭
+  554                             第2字节为TCP状态
+  555          * Return         : None
+  556          *******************************************************************************/
+  557          void CH395CMDGetSocketStatus(UINT8 sockindex,UINT8 *status)
+  558          {
+  559   1          xWriteCH395Cmd(CMD12_GET_SOCKET_STATUS_SN);
+  560   1          xWriteCH395Data(sockindex);
+  561   1          *status++ = xReadCH395Data();
+  562   1          *status++ = xReadCH395Data();
+  563   1          //xEndCH395Cmd();
+  564   1      }
+  565          
+  566          /*******************************************************************************
+  567          * Function Name  : CH395OpenSocket
+  568          * Description    : 打开socket，此命令需要等待执行成功
+  569          * Input          : sockindex Socket索引
+  570          * Output         : None
+  571          * Return         : 返回执行结果
+  572          *******************************************************************************/
+  573          UINT8  CH395OpenSocket(UINT8 sockindex)
+  574          {
+  575   1          UINT8 i = 0;
+  576   1          UINT8 s = 0;
+  577   1          xWriteCH395Cmd(CMD1W_OPEN_SOCKET_SN);
+  578   1          xWriteCH395Data(sockindex);
+  579   1          //xEndCH395Cmd();
+  580   1          while(1)
+  581   1          {
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 10  
+
+  582   2              mDelaymS(5);                                                 /* 延时查询，建议2MS以上*/
+  583   2              s = CH395GetCmdStatus();                                     /* 不能过于频繁查询*/
+  584   2              if(s !=CH395_ERR_BUSY)break;                                 /* 如果CH395芯片返回忙状态*
+             -/
+  585   2              if(i++ > 200)return CH395_ERR_UNKNOW;                        /* 超时退出*/
+  586   2          }
+  587   1          return s;
+  588   1      }
+  589          
+  590          /*******************************************************************************
+  591          * Function Name  : CH395CloseSocket
+  592          * Description    : 关闭socket，
+  593          * Input          : sockindex Socket索引
+  594          * Output         : None
+  595          * Return         : 返回执行结果
+  596          *******************************************************************************/
+  597          UINT8  CH395CloseSocket(UINT8 sockindex)
+  598          {
+  599   1          UINT8 i = 0;
+  600   1          UINT8 s = 0;
+  601   1          xWriteCH395Cmd(CMD1W_CLOSE_SOCKET_SN);
+  602   1          xWriteCH395Data(sockindex);
+  603   1          //xEndCH395Cmd();
+  604   1          while(1)
+  605   1          {
+  606   2              mDelaymS(5);                                                 /* 延时查询，建议2MS以上*/
+  607   2              s = CH395GetCmdStatus();                                     /* 不能过于频繁查询*/
+  608   2              if(s !=CH395_ERR_BUSY)break;                                 /* 如果CH395芯片返回忙状态*
+             -/
+  609   2              if(i++ > 200)return CH395_ERR_UNKNOW;                        /* 超时退出*/
+  610   2          }
+  611   1          return s;
+  612   1      }
+  613          
+  614          /********************************************************************************
+  615          * Function Name  : CH395TCPConnect
+  616          * Description    : TCP连接，仅在TCP模式下有效，此命令需要等待执行成功
+  617          * Input          : sockindex Socket索引
+  618          * Output         : None
+  619          * Return         : 返回执行结果
+  620          *******************************************************************************/
+  621          UINT8 CH395TCPConnect(UINT8 sockindex)
+  622          {
+  623   1          UINT8 i = 0;
+  624   1          UINT8 s = 0;
+  625   1          xWriteCH395Cmd(CMD1W_TCP_CONNECT_SN);
+  626   1          xWriteCH395Data(sockindex);
+  627   1          //xEndCH395Cmd();
+  628   1          while(1)
+  629   1          {
+  630   2              mDelaymS(5);                                                 /* 延时查询，建议2MS以上*/
+  631   2              s = CH395GetCmdStatus();                                     /* 不能过于频繁查询*/
+  632   2              if(s !=CH395_ERR_BUSY)break;                                 /* 如果CH395芯片返回忙状态*
+             -/
+  633   2              if(i++ > 200)return CH395_ERR_UNKNOW;                        /* 超时退出*/
+  634   2          }
+  635   1          return s;
+  636   1      }
+  637          
+  638          /******************************************************************************
+  639          * Function Name  : CH395TCPListen
+  640          * Description    : TCP监听，仅在TCP模式下有效，此命令需要等待执行成功
+  641          * Input          : sockindex Socket索引
+  642          * Output         : None
+  643          * Return         : 返回执行结果
+  644          *******************************************************************************/
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 11  
+
+  645          UINT8 CH395TCPListen(UINT8 sockindex)
+  646          {
+  647   1          UINT8 i = 0;
+  648   1          UINT8 s = 0;
+  649   1          xWriteCH395Cmd(CMD1W_TCP_LISTEN_SN);
+  650   1          xWriteCH395Data(sockindex);
+  651   1          //xEndCH395Cmd();
+  652   1          while(1)
+  653   1          {
+  654   2              mDelaymS(5);                                                 /* 延时查询，建议2MS以上*/
+  655   2              s = CH395GetCmdStatus();                                     /* 不能过于频繁查询*/
+  656   2              if(s !=CH395_ERR_BUSY)break;                                 /* 如果CH395芯片返回忙状态*
+             -/
+  657   2              if(i++ > 200)return CH395_ERR_UNKNOW;                        /* 超时退出*/
+  658   2          }
+  659   1          return s;
+  660   1      }
+  661          
+  662          /********************************************************************************
+  663          * Function Name  : CH395TCPDisconnect
+  664          * Description    : TCP断开，仅在TCP模式下有效，此命令需要等待执行成功
+  665          * Input          : sockindex Socket索引
+  666          * Output         : None
+  667          * Return         : None
+  668          *******************************************************************************/
+  669          UINT8 CH395TCPDisconnect(UINT8 sockindex)
+  670          {
+  671   1          UINT8 i = 0;
+  672   1          UINT8 s = 0;
+  673   1          xWriteCH395Cmd(CMD1W_TCP_DISNCONNECT_SN);
+  674   1          xWriteCH395Data(sockindex);
+  675   1          //xEndCH395Cmd();
+  676   1          while(1)
+  677   1          {
+  678   2              mDelaymS(5);                                                 /* 延时查询，建议2MS以上*/
+  679   2              s = CH395GetCmdStatus();                                     /* 不能过于频繁查询*/
+  680   2              if(s !=CH395_ERR_BUSY)break;                                 /* 如果CH395芯片返回忙状态*
+             -/
+  681   2              if(i++ > 200)return CH395_ERR_UNKNOW;                        /* 超时退出*/
+  682   2          }
+  683   1          return s;
+  684   1      }
+  685          
+  686          /*******************************************************************************
+  687          * Function Name  : CH395GetSocketInt
+  688          * Description    : 获取socket n的中断状态
+  689          * Input          : sockindex   socket索引
+  690          * Output         : None
+  691          * Return         : 中断状态
+  692          *******************************************************************************/
+  693          UINT8 CH395GetSocketInt(UINT8 sockindex)
+  694          {
+  695   1          UINT8 intstatus;
+  696   1          xWriteCH395Cmd(CMD11_GET_INT_STATUS_SN);
+  697   1          xWriteCH395Data(sockindex);
+  698   1          mDelayuS(2);
+  699   1          intstatus = xReadCH395Data();
+  700   1          //xEndCH395Cmd();
+  701   1          return intstatus;
+  702   1      }
+  703          
+  704          /*******************************************************************************
+  705          * Function Name  : CH395CRCRet6Bit
+  706          * Description    : 对多播地址进行CRC运算，并取高6位。
+  707          * Input          : mac_addr   MAC地址
+  708          * Output         : None
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 12  
+
+  709          * Return         : 返回CRC32的高6位
+  710          *******************************************************************************/
+  711          UINT8 CH395CRCRet6Bit(UINT8 *mac_addr)
+  712          {
+  713   1          INT32 perByte;
+  714   1          INT32 perBit;
+  715   1          const UINT32 poly = 0x04C11DB7;
+  716   1          UINT32 crc_value = 0xFFFFFFFF;
+  717   1          UINT8 c;
+  718   1          for ( perByte = 0; perByte < 6; perByte ++ ) 
+  719   1          {
+  720   2              c = *(mac_addr++);
+  721   2              for ( perBit = 0; perBit < 8; perBit++ ) 
+  722   2              {
+  723   3                  crc_value = (crc_value<<1)^((((crc_value>>31)^c)&0x01)?poly:0);
+  724   3                  c >>= 1;
+  725   3              }
+  726   2          }
+  727   1          crc_value=crc_value>>26;                                      
+  728   1          return ((UINT8)crc_value);
+  729   1      }
+  730          
+  731          /******************************************************************************
+  732          * Function Name  : CH395DHCPEnable
+  733          * Description    : 启动/停止DHCP
+  734          * Input          : flag   1:启动DHCP;0：停止DHCP
+  735          * Output         : None
+  736          * Return         : 执行状态
+  737          *******************************************************************************/
+  738          UINT8  CH395DHCPEnable(UINT8 flag)
+  739          {
+  740   1          UINT8 i = 0;
+  741   1          UINT8 s;
+  742   1          xWriteCH395Cmd(CMD10_DHCP_ENABLE);
+  743   1          xWriteCH395Data(flag);
+  744   1          //xEndCH395Cmd();
+  745   1          while(1)
+  746   1          {
+  747   2              mDelaymS(20);
+  748   2              s = CH395GetCmdStatus();                                     /* 不能过于频繁查询*/
+  749   2              if(s !=CH395_ERR_BUSY)break;                                 /* 如果CH395芯片返回忙状态*
+             -/
+  750   2              if(i++ > 200)return CH395_ERR_UNKNOW;                        /* 超时退出*/
+  751   2          }
+  752   1          return s;
+  753   1      }
+  754          
+  755          /******************************************************************************
+  756          * Function Name  : CH395GetDHCPStatus
+  757          * Description    : 获取DHCP状态
+  758          * Input          : None
+  759          * Output         : None
+  760          * Return         : DHCP状态，0为成功，其他值表示错误
+  761          *******************************************************************************/
+  762          UINT8 CH395GetDHCPStatus(void)
+  763          {
+  764   1          UINT8 status;
+  765   1          xWriteCH395Cmd(CMD01_GET_DHCP_STATUS);
+  766   1          status = xReadCH395Data();
+  767   1          //xEndCH395Cmd();
+  768   1          return status;
+  769   1      }
+  770          
+  771          /*******************************************************************************
+  772          * Function Name  : CH395GetIPInf
+  773          * Description    : 获取IP，子网掩码和网关地址
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 13  
+
+  774          * Input          : None
+  775          * Output         : 12个字节的IP,子网掩码和网关地址
+  776          * Return         : None
+  777          *******************************************************************************/
+  778          void CH395GetIPInf(UINT8 *addr)
+  779          {
+  780   1          UINT8 i;
+  781   1          xWriteCH395Cmd(CMD014_GET_IP_INF);
+  782   1          for(i = 0; i < 20; i++)
+  783   1          {
+  784   2           *addr++ = xReadCH395Data();
+  785   2          }
+  786   1          //xEndCH395Cmd();
+  787   1      }
+  788          
+  789          /*******************************************************************************
+  790          * Function Name  : CH395WriteGPIOAddr
+  791          * Description    : 写GPIO寄存器
+  792          * Input          : regadd   寄存器地址
+  793          *                ：regval   寄存器值
+  794          * Output         : None
+  795          * Return         : None
+  796          *******************************************************************************/
+  797          void CH395WriteGPIOAddr(UINT8 regadd,UINT8 regval)
+  798          {
+  799   1          xWriteCH395Cmd(CMD20_WRITE_GPIO_REG);
+  800   1          xWriteCH395Data(regadd);
+  801   1          xWriteCH395Data(regval);
+  802   1      }
+  803          
+  804          /*******************************************************************************
+  805          * Function Name  : CH395ReadGPIOAddr
+  806          * Description    : 读GPIO寄存器
+  807          * Input          : regadd   寄存器地址
+  808          * Output         : None
+  809          * Return         : 寄存器的值
+  810          *******************************************************************************/
+  811          UINT8 CH395ReadGPIOAddr(UINT8 regadd)
+  812          {
+  813   1          UINT8 i;
+  814   1          xWriteCH395Cmd(CMD10_READ_GPIO_REG);
+  815   1          xWriteCH395Data(regadd);
+  816   1          mDelaymS(1);
+  817   1          i = xReadCH395Data();
+  818   1          return i;
+  819   1      }
+  820          
+  821          /*******************************************************************************
+  822          * Function Name  : CH395EEPROMErase
+  823          * Description    : 擦除EEPROM
+  824          * Input          : None
+  825          * Output         : None
+  826          * Return         : 执行状态
+  827          *******************************************************************************/
+  828          UINT8 CH395EEPROMErase(void)
+  829          {
+  830   1          UINT8 i;    
+  831   1          xWriteCH395Cmd(CMD00_EEPROM_ERASE);
+  832   1          while(1)
+  833   1          {
+  834   2              mDelaymS(20);
+  835   2             i = CH395GetCmdStatus();
+  836   2             if(i == CH395_ERR_BUSY)continue;
+  837   2             break;
+  838   2          }
+  839   1          return i;
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 14  
+
+  840   1      }
+  841          
+  842          /*******************************************************************************
+  843          * Function Name  : CH395EEPROMWrite
+  844          * Description    : 写EEPROM
+  845          * Input          : eepaddr  EEPROM地址
+  846          *                ：buf      缓冲区地址
+  847          *                ：len      长度
+  848          * Output         : None
+  849          * Return         : 执行状态
+  850          *******************************************************************************/
+  851          UINT8 CH395EEPROMWrite(UINT16 eepaddr,UINT8 *buf,UINT8 len)
+  852          {
+  853   1          UINT8 i;
+  854   1          xWriteCH395Cmd(CMD30_EEPROM_WRITE);
+  855   1          xWriteCH395Data((UINT8)(eepaddr));
+  856   1          xWriteCH395Data((UINT8)(eepaddr >> 8));
+  857   1          xWriteCH395Data(len);  
+  858   1          while(len--)xWriteCH395Data(*buf++);
+  859   1          while(1)
+  860   1          {
+  861   2              mDelaymS(20);
+  862   2             i = CH395GetCmdStatus();
+  863   2             if(i == CH395_ERR_BUSY)continue;
+  864   2             break;
+  865   2          }
+  866   1          return i;
+  867   1      }
+  868            
+  869          /*******************************************************************************
+  870          * Function Name  : CH395EEPROMRead
+  871          * Description    : 写EEPROM
+  872          * Input          : eepaddr  EEPROM地址
+  873          *                ：buf      缓冲区地址
+  874          *                ：len      长度
+  875          * Output         : None
+  876          * Return         : None
+  877          *******************************************************************************/
+  878          void CH395EEPROMRead(UINT16 eepaddr,UINT8 *buf,UINT8 len)
+  879          {
+  880   1          xWriteCH395Cmd(CMD30_EEPROM_READ);
+  881   1          xWriteCH395Data((UINT8)(eepaddr));
+  882   1          xWriteCH395Data((UINT8)(eepaddr >> 8));
+  883   1          xWriteCH395Data(len);  
+  884   1          mDelaymS(1);
+  885   1          while(len--)*buf++ = xReadCH395Data();
+  886   1      }
+  887          
+  888          /*******************************************************************************
+  889          * Function Name  : CH395SetTCPMss
+  890          * Description    : 设置TCP MSS值
+  891          * Input          : tcpmss 
+  892          * Output         : None
+  893          * Return         : None
+  894          *******************************************************************************/
+  895          void CH395SetTCPMss(UINT16 tcpmss)
+  896          {
+  897   1          xWriteCH395Cmd(CMD20_SET_TCP_MSS);
+  898   1          xWriteCH395Data((UINT8)(tcpmss));
+  899   1          xWriteCH395Data((UINT8)(tcpmss >> 8));
+  900   1      }
+  901          
+  902          /*******************************************************************************
+  903          * Function Name  : CH395SetSocketRecvBuf
+  904          * Description    : 设置Socket接收缓冲区
+  905          * Input          : sockindex  socket索引
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 15  
+
+  906                           ：startblk   起始地址
+  907                           ：blknum     单位缓冲区个数 ，单位为512字节
+  908          * Output         : None
+  909          * Return         : None
+  910          *******************************************************************************/
+  911          void CH395SetSocketRecvBuf(UINT8 sockindex,UINT8 startblk,UINT8 blknum)
+  912          {
+  913   1          xWriteCH395Cmd(CMD30_SET_RECV_BUF);
+  914   1          xWriteCH395Data(sockindex);
+  915   1          xWriteCH395Data(startblk);
+  916   1          xWriteCH395Data(blknum);
+  917   1      }
+  918          
+  919          /*******************************************************************************
+  920          * Function Name  : CH395SetSocketSendBuf
+  921          * Description    : 设置Socket发送缓冲区
+  922          * Input          : sockindex  socket索引
+  923                           ：startblk   起始地址
+  924                           ：blknum     单位缓冲区个数
+  925          * Output         : None
+  926          * Return         : None
+  927          *******************************************************************************/
+  928          void CH395SetSocketSendBuf(UINT8 sockindex,UINT8 startblk,UINT8 blknum)
+  929          {
+  930   1          xWriteCH395Cmd(CMD30_SET_SEND_BUF);
+  931   1          xWriteCH395Data(sockindex);
+  932   1          xWriteCH395Data(startblk);
+  933   1          xWriteCH395Data(blknum);
+  934   1      }
+  935          
+  936          /*******************************************************************************
+  937          * Function Name  : CH395UDPSendTo
+  938          * Description    : UDP向指定的IP和端口发送数据
+  939          * Input          : buf     : 发送数据缓冲区
+  940                             len     : 发送数据长度
+  941                     ip      : 目标IP
+  942                     port    : 目标端口
+  943                     sockeid : socket索引值
+  944          * Output         : None
+  945          * Return         : None
+  946          *******************************************************************************/
+  947          void CH395UDPSendTo(UINT8 *buf,UINT16 len,UINT8 *ip,UINT16 port,UINT8 sockindex)
+  948          {
+  949   1          CH395SetSocketDesIP(sockindex,ip);                            /* 设置socket 0目标IP地址 */     
+             -    
+  950   1          CH395SetSocketDesPort(sockindex,port);
+  951   1          CH395SendData(sockindex,buf,len);    
+  952   1      }
+  953          
+  954          /*******************************************************************************
+  955          * Function Name  : CH395SetStartPara
+  956          * Description    : 设置CH395启动参数
+  957          * Input          : mdata
+  958          * Output         : None
+  959          * Return         : None
+  960          *******************************************************************************/
+  961          void CH395SetStartPara(UINT32 mdata)
+  962          {
+  963   1          xWriteCH395Cmd(CMD40_SET_FUN_PARA);
+  964   1          xWriteCH395Data((UINT8)mdata);
+  965   1          xWriteCH395Data((UINT8)((UINT16)mdata>>8));
+  966   1          xWriteCH395Data((UINT8)(mdata >> 16));
+  967   1          xWriteCH395Data((UINT8)(mdata >> 24));
+  968   1      }
+  969          
+  970          /*******************************************************************************
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 16  
+
+  971          * Function Name  : CH395CMDGetGlobIntStatus
+  972          * Description    : 获取全局中断状态，收到此命令CH395自动取消中断,0x44及以上版本�
+             -��用
+  973          * Input          : None
+  974          * Output         : None
+  975          * Return         : 返回当前的全局中断状态
+  976          *******************************************************************************/
+  977          UINT16 CH395CMDGetGlobIntStatus_ALL(void)
+  978          {
+  979   1          UINT16 init_status;
+  980   1          xWriteCH395Cmd(CMD02_GET_GLOB_INT_STATUS_ALL);
+  981   1          mDelayuS(2);
+  982   1          init_status = xReadCH395Data();
+  983   1          init_status = (UINT16)(xReadCH395Data()<<8) + init_status;
+  984   1          //xEndCH395Cmd();
+  985   1          return  init_status;
+  986   1      }
+  987          
+  988          /*******************************************************************************
+  989          * Function Name  : CH395SetKeepLive
+  990          * Description    : 设置keepalive功能
+  991          * Input          : sockindex Socket号
+  992          *                  cmd 0：关闭 1：开启
+  993          * Output         : None
+  994          * Return         : None
+  995          *******************************************************************************/
+  996          void CH395SetKeepLive(UINT8 sockindex,UINT8 cmd)
+  997          {
+  998   1          xWriteCH395Cmd(CMD20_SET_KEEP_LIVE_SN);
+  999   1          xWriteCH395Data(sockindex);
+ 1000   1          xWriteCH395Data(cmd);
+ 1001   1      }
+ 1002          
+ 1003          /*******************************************************************************
+ 1004          * Function Name  : CH395KeepLiveCNT
+ 1005          * Description    : 设置keepalive重试次数
+ 1006          * Input          : cnt 重试次数（）
+ 1007          * Output         : None
+ 1008          * Return         : None
+ 1009          *******************************************************************************/
+ 1010          void CH395KeepLiveCNT(UINT8 cnt)
+ 1011          {
+ 1012   1          xWriteCH395Cmd(CMD10_SET_KEEP_LIVE_CNT);
+ 1013   1          xWriteCH395Data(cnt);
+ 1014   1      }
+ 1015          
+ 1016          /*******************************************************************************
+ 1017          * Function Name  : CH395KeepLiveIDLE
+ 1018          * Description    : 设置KEEPLIVE空闲
+ 1019          * Input          : idle 空闲时间（单位：ms）
+ 1020          * Output         : None
+ 1021          * Return         : None
+ 1022          *******************************************************************************/
+ 1023          void CH395KeepLiveIDLE(UINT32 idle)
+ 1024          {
+ 1025   1          xWriteCH395Cmd(CMD40_SET_KEEP_LIVE_IDLE);
+ 1026   1          xWriteCH395Data((UINT8)idle);
+ 1027   1          xWriteCH395Data((UINT8)((UINT16)idle>>8));
+ 1028   1          xWriteCH395Data((UINT8)(idle >> 16));
+ 1029   1          xWriteCH395Data((UINT8)(idle >> 24));
+ 1030   1      }
+ 1031          
+ 1032          /*******************************************************************************
+ 1033          * Function Name  : CH395KeepLiveINTVL
+ 1034          * Description    : 设置KeepLive间隔时间 
+ 1035          * Input          : intvl 间隔时间（单位：ms）
+C251 COMPILER V5.60.0,  CH395CMD                                                           24/03/23  00:55:41  PAGE 17  
+
+ 1036          * Output         : None
+ 1037          * Return         : None
+ 1038          *******************************************************************************/
+ 1039          void CH395KeepLiveINTVL(UINT32 intvl)
+ 1040          {
+ 1041   1          xWriteCH395Cmd(CMD40_SET_KEEP_LIVE_INTVL);
+ 1042   1          xWriteCH395Data((UINT8)intvl);
+ 1043   1          xWriteCH395Data((UINT8)((UINT16)intvl>>8));
+ 1044   1          xWriteCH395Data((UINT8)(intvl >> 16));
+ 1045   1          xWriteCH395Data((UINT8)(intvl >> 24));
+ 1046   1      }
+ 1047          
+ 1048          /*******************************************************************************
+ 1049          * Function Name  : CH395SetTTLNum
+ 1050          * Description    : 设置TTL
+ 1051          * Input          : sockindex Socket号
+ 1052          *                  TTLnum:TTL数
+ 1053          * Output         : None
+ 1054          * Return         : None
+ 1055          *******************************************************************************/
+ 1056          void CH395SetTTLNum(UINT8 sockindex,UINT8 TTLnum)
+ 1057          {
+ 1058   1          xWriteCH395Cmd(CMD20_SET_TTL);
+ 1059   1          xWriteCH395Data(sockindex);
+ 1060   1          xWriteCH395Data(TTLnum);
+ 1061   1      }
+ 1062          
+ 1063          /**************************** endfile *************************************/
+ 1064          
+ 1065          
+ 1066          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      2199     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

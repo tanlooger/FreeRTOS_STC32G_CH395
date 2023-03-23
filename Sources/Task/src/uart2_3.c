@@ -46,11 +46,14 @@ portTASK_FUNCTION( vUart2_3Task, pvParameters )
     PrintString3("STC32G UART3-UART2 Test Programme!\r\n");  //UART3发送一个字符串
     while(1)
     {
+
+
+
         Sec_Cnt++;
         if(Sec_Cnt >= (uint16_t)pvParameters)
         {
             Sec_Cnt = 0;
-            PrintString3("STC32G UART3-UART2 Test Programme!\r\n");  //UART3发送一个字符串
+            PrintString2("STC32G UART3-UART2 Test Programme!\r\n");  //UART3发送一个字符串
         }
 
         if(COM2.RX_TimeOut > 0)

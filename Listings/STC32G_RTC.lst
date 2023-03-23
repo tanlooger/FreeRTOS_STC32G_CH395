@@ -1,0 +1,118 @@
+C251 COMPILER V5.60.0,  STC32G_RTC                                                         24/03/23  00:55:33  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE STC32G_RTC
+OBJECT MODULE PLACED IN .\Objects\STC32G_RTC.obj
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE Sources\Driver\src\STC32G_RTC.c XSMALL FUNCTIONS(REENTRANT) OPTIMIZE(4
+                    -,SPEED) BROWSE INCDIR(.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32
+                    -G12K128;.\Sources\Driver\inc;.\Sources\Task\inc;.\Sources\ch395) DEBUG PRINT(.\Listings\STC32G_RTC.lst) TABS(2) OBJECT(.
+                    -\Objects\STC32G_RTC.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* --- STC MCU Limited ------------------------------------------------*/
+    3          /* --- STC 1T Series MCU Demo Programme -------------------------------*/
+    4          /* --- Mobile: (86)13922805190 ----------------------------------------*/
+    5          /* --- Fax: 86-0513-55012956,55012947,55012969 ------------------------*/
+    6          /* --- Tel: 86-0513-55012928,55012929,55012966 ------------------------*/
+    7          /* --- Web: www.STCMCU.com --------------------------------------------*/
+    8          /* --- Web: www.STCMCUDATA.com  ---------------------------------------*/
+    9          /* --- QQ:  800003751 -------------------------------------------------*/
+   10          /* 如果要在程序中使用此代码,请在程序中注明使用了STC的资料及程序            */
+   11          /*---------------------------------------------------------------------*/
+   12          
+   13          #include  "STC32G_RTC.h"
+   14          
+   15          //========================================================================
+   16          // 函数: uint8_t  ADC_Inilize(ADC_InitTypeDef *ADCx)
+   17          // 描述: ADC初始化程序.
+   18          // 参数: ADCx: 结构参数,请参考adc.h里的定义.
+   19          // 返回: none.
+   20          // 版本: V1.0, 2012-10-22
+   21          //========================================================================
+   22          uint8_t RTC_Inilize(RTC_InitTypeDef *RTCx)
+   23          {
+   24   1        if(RTCx->RTC_Year > 99) return FAIL;  //错误
+   25   1        if(RTCx->RTC_Month > 12)  return FAIL;  //错误
+   26   1        if(RTCx->RTC_Day > 31)  return FAIL;  //错误
+   27   1        if(RTCx->RTC_Hour > 23) return FAIL;  //错误
+   28   1        if(RTCx->RTC_Min > 59)  return FAIL;  //错误
+   29   1        if(RTCx->RTC_Sec > 59)  return FAIL;  //错误
+   30   1        if(RTCx->RTC_Ssec > 127)  return FAIL;  //错误
+   31   1        if(RTCx->RTC_ALAHour > 23)  return FAIL;  //错误
+   32   1        if(RTCx->RTC_ALAMin > 59) return FAIL;  //错误
+   33   1        if(RTCx->RTC_ALASec > 59) return FAIL;  //错误
+   34   1        if(RTCx->RTC_ALASsec > 127) return FAIL;  //错误
+   35   1      
+   36   1        INIYEAR = RTCx->RTC_Year;
+   37   1        INIMONTH = RTCx->RTC_Month;
+   38   1        INIDAY = RTCx->RTC_Day;
+   39   1        INIHOUR = RTCx->RTC_Hour;
+   40   1        INIMIN = RTCx->RTC_Min;
+   41   1        INISEC = RTCx->RTC_Sec;
+   42   1        INISSEC = RTCx->RTC_Ssec;
+   43   1      
+   44   1        ALAHOUR = RTCx->RTC_ALAHour;  //闹钟小时
+   45   1        ALAMIN  = RTCx->RTC_ALAMin;   //闹钟分钟
+   46   1        ALASEC  = RTCx->RTC_ALASec;   //闹钟秒
+   47   1        ALASSEC = RTCx->RTC_ALASsec;  //闹钟1/128秒
+   48   1      
+   49   1        if(RTCx->RTC_Clock == RTC_IRC32KCR)
+   50   1        {
+   51   2          //STC32G 芯片使用内部32K时钟，休眠无法唤醒
+   52   2          IRC32KCR = 0x80;   //启动内部32K晶振.
+   53   2          while (!(IRC32KCR & 1));  //等待时钟稳定
+   54   2          RTCCFG = 0x03;    //选择内部32K时钟源，触发RTC寄存器初始化
+   55   2        }
+   56   1        else
+C251 COMPILER V5.60.0,  STC32G_RTC                                                         24/03/23  00:55:33  PAGE 2   
+
+   57   1        {
+   58   2          X32KCR = 0x80 + 0x40;   //启动外部32K晶振, 低增益+0x00, 高增益+0x40.
+   59   2          while (!(X32KCR & 1));  //等待时钟稳定
+   60   2          RTCCFG = 0x01;    //选择外部32K时钟源，触发RTC寄存器初始化
+   61   2        }
+   62   1      
+   63   1        if(RTCx->RTC_Enable == ENABLE)
+   64   1        {
+   65   2          RTCCR = 0x01;     //RTC使能
+   66   2          while(RTCCFG & 0x01); //等待初始化完成,需要在 "RTC使能" 之后判断. 
+   67   2          //设置RTC时间需要32768Hz的1个周期时间,大约30.5us. 由于同步, 所以实际等待时间�
+             -��0~30.5us.
+   68   2          //如果不等待设置完成就睡眠, 则RTC会由于设置没完成, 停止计数, 唤醒后才继�
+             -�完成设置并继续计数.
+   69   2        }
+   70   1        else
+   71   1        {
+   72   2          RTCCR = 0x00;     //RTC关闭
+   73   2        }
+   74   1        
+   75   1        return SUCCESS;
+   76   1      }
+   77          
+   78          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       426     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

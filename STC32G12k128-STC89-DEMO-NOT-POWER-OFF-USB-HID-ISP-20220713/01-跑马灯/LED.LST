@@ -1,0 +1,401 @@
+C251 COMPILER V5.60.0,  LED                                                                11/07/22  11:40:15  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN LED.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE LED.c XSMALL INTR2 BROWSE DEBUG
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* --- STC MCU Limited ------------------------------------------------*/
+    3          /* --- STC 1T Series MCU Demo Programme -------------------------------*/
+    4          /* --- Mobile: (86)13922805190 ----------------------------------------*/
+    5          /* --- Fax: 86-0513-55012956,55012947,55012969 ------------------------*/
+    6          /* --- Tel: 86-0513-55012928,55012929,55012966 ------------------------*/
+    7          /* --- Web: www.STCMCU.com --------------------------------------------*/
+    8          /* --- Web: www.STCMCUDATA.com  ---------------------------------------*/
+    9          /* --- QQ:  800003751 -------------------------------------------------*/
+   10          /* 如果要在程序中使用此代码,请在程序中注明使用了STC的资料及程序            */
+   11          /*---------------------------------------------------------------------*/
+   12          
+   13          #include "../comm/STC32G.h"  //包含此头文件后，不需要再包含"reg51.h"头文件
+   14          #include "../comm/usb.h"     //USB调试及复位所需头文件
+   15          
+   16          #define     MAIN_Fosc       24000000L   //定义主时钟
+   17          
+   18          /*************  功能说明    **************
+   19          
+   20          本例程基于STC32G转STC89系列转接板（降龙棍）进行编写测试。
+   21          
+   22          程序演示跑马灯效果，输出低驱动。
+   23          
+   24          通过设置“VirtualDevice”定义值切换软硬件显示方式：
+   25          VirtualDevice=0：驱动核心板上的硬件LED灯；
+   26          VirtualDevice=1：驱动STC-ISP软件调试接口里面的LED-DIP40虚拟设备（需要在HID助手里打开对应的设备）。
+   27          
+   28          此外程序演示两种复位进入USB下载模式的方法：
+   29          1. 通过每1毫秒执行一次“KeyResetScan”函数，实现长按P3.2口按键触发MCU复位，进入USB下载模式。
+   30          2. 通过加载“stc_usb_hid_32g.lib”库函数，实现使用STC-ISP软件发送指令触发MCU复位，进入USB下载模式并自动下
+             -载。
+   31          
+   32          下载时, 选择时钟 24MHZ (用户可自行修改频率)。
+   33          
+   34          当用户使用硬件 USB 对 STC32G 系列进行 ISP 下载时不能调节内部 IRC 的频率，
+   35          但用户可用选择内部预置的 16 个频率
+   36          （分别是 5.5296M、 6M、 11.0592M、 12M、 18.432M、 20M、 22.1184M、 
+   37          24M、27M、 30M、 33.1776M、 35M）。
+   38          下载时用户只能从频率下拉列表中进行选择其中之一，而不能手动输入其他频率。
+   39          （使用串口下载则可用输入 4M～35M 之间的任意频率）。
+   40          
+   41          ******************************************/
+   42          
+   43          #define VirtualDevice        0    //0: 驱动硬件LED;  1: 驱动调试接口LED-DIP40虚拟设备
+   44          
+   45          #define Timer0_Reload   (65536UL -(MAIN_Fosc / 1000))       //Timer 0 中断频率, 1000次/秒
+   46          
+   47          //USB调试及复位所需定义
+   48          char *USER_DEVICEDESC = NULL;
+   49          char *USER_PRODUCTDESC = NULL;
+   50          char *USER_STCISPCMD = "@STCISP#";                      //设置自动复位到ISP区的用户接口命令
+   51          
+   52          //P3.2口按键复位所需变量
+   53          bit Key_Flag;
+   54          u16 Key_cnt;
+   55          
+   56          u8 index=0;
+   57          u8 code LED_Buf[34][7]=
+   58          {
+C251 COMPILER V5.60.0,  LED                                                                11/07/22  11:40:15  PAGE 2   
+
+   59             //Mask  P0   P1   P2   P3   P4   P5
+   60              {0x3f,0xff,0xfe,0xff,0xff,0xff,0xff},  /* P1.0 */
+   61              {0x3f,0xff,0xfd,0xff,0xff,0xff,0xff},  /* P1.1 */
+   62              {0x3f,0xff,0xff,0xff,0xff,0xff,0xfb},  /* P5.2 */
+   63              {0x3f,0xff,0xf7,0xff,0xff,0xff,0xff},  /* P1.3 */
+   64              {0x3f,0xff,0xef,0xff,0xff,0xff,0xff},  /* P1.4 */
+   65              {0x3f,0xff,0xdf,0xff,0xff,0xff,0xff},  /* P1.5 */
+   66              {0x3f,0xff,0xbf,0xff,0xff,0xff,0xff},  /* P1.6 */
+   67              {0x3f,0xff,0x7f,0xff,0xff,0xff,0xff},  /* P1.7 */
+   68          
+   69              {0x3f,0xff,0xff,0xff,0xff,0xbf,0xff},  /* P4.6 */
+   70              {0x3f,0xff,0xff,0xff,0xff,0x7f,0xff},  /* P4.7 */
+   71          
+   72              {0x3f,0xff,0xff,0xff,0xfb,0xff,0xff},  /* P3.2 */
+   73              {0x3f,0xff,0xff,0xff,0xf7,0xff,0xff},  /* P3.3 */
+   74              {0x3f,0xff,0xff,0xff,0xef,0xff,0xff},  /* P3.4 */
+   75              {0x3f,0xff,0xff,0xff,0xdf,0xff,0xff},  /* P3.5 */
+   76              {0x3f,0xff,0xff,0xff,0xbf,0xff,0xff},  /* P3.6 */
+   77              {0x3f,0xff,0xff,0xff,0x7f,0xff,0xff},  /* P3.7 */
+   78          
+   79              {0x3f,0xff,0xff,0xfe,0xff,0xff,0xff},  /* P2.0 */
+   80              {0x3f,0xff,0xff,0xfd,0xff,0xff,0xff},  /* P2.1 */
+   81              {0x3f,0xff,0xff,0xfb,0xff,0xff,0xff},  /* P2.2 */
+   82              {0x3f,0xff,0xff,0xf7,0xff,0xff,0xff},  /* P2.3 */
+   83              {0x3f,0xff,0xff,0xef,0xff,0xff,0xff},  /* P2.4 */
+   84              {0x3f,0xff,0xff,0xdf,0xff,0xff,0xff},  /* P2.5 */
+   85              {0x3f,0xff,0xff,0xbf,0xff,0xff,0xff},  /* P2.6 */
+   86              {0x3f,0xff,0xff,0x7f,0xff,0xff,0xff},  /* P2.7 */
+   87          
+   88              {0x3f,0xff,0xff,0xff,0xff,0xff,0xef},  /* P5.4 */
+   89              {0x3f,0xff,0xff,0xff,0xff,0xdf,0xff},  /* P4.5 */
+   90          
+   91              {0x3f,0x7f,0xff,0xff,0xff,0xff,0xff},  /* P0.7 */
+   92              {0x3f,0xbf,0xff,0xff,0xff,0xff,0xff},  /* P0.6 */
+   93              {0x3f,0xdf,0xff,0xff,0xff,0xff,0xff},  /* P0.5 */
+   94              {0x3f,0xef,0xff,0xff,0xff,0xff,0xff},  /* P0.4 */
+   95              {0x3f,0xf7,0xff,0xff,0xff,0xff,0xff},  /* P0.3 */
+   96              {0x3f,0xfb,0xff,0xff,0xff,0xff,0xff},  /* P0.2 */
+   97              {0x3f,0xfd,0xff,0xff,0xff,0xff,0xff},  /* P0.1 */
+   98              {0x3f,0xfe,0xff,0xff,0xff,0xff,0xff},  /* P0.0 */
+   99          };
+  100          
+  101          void Timer0_Init(void);
+  102          void delay_ms(u8 ms);
+  103          void HardwareMarquee(void);
+  104          void SoftwareMarquee(void);
+  105          
+  106          /******************** 主函数 **************************/
+  107          void main(void)
+  108          {
+  109   1          WTST = 0;  //设置程序指令延时参数，赋值为0可将CPU执行指令的速度设置为最快
+  110   1          EAXFR = 1; //扩展寄存器(XFR)访问使能
+  111   1          CKCON = 0; //提高访问XRAM速度
+  112   1      
+  113   1          P0M1 = 0x00;   P0M0 = 0x00;   //设置为准双向口
+  114   1          P1M1 = 0x00;   P1M0 = 0x00;   //设置为准双向口
+  115   1          P2M1 = 0x00;   P2M0 = 0x00;   //设置为准双向口
+  116   1          P3M1 = 0x00;   P3M0 = 0x00;   //设置为准双向口
+  117   1          P4M1 = 0x00;   P4M0 = 0x00;   //设置为准双向口
+  118   1          P5M1 = 0x00;   P5M0 = 0x00;   //设置为准双向口
+  119   1          P6M1 = 0x00;   P6M0 = 0x00;   //设置为准双向口
+  120   1          P7M1 = 0x00;   P7M0 = 0x00;   //设置为准双向口
+  121   1      
+  122   1          //USB调试及复位所需代码-----
+  123   1          P3M0 &= ~0x03;
+  124   1          P3M1 |= 0x03;
+C251 COMPILER V5.60.0,  LED                                                                11/07/22  11:40:15  PAGE 3   
+
+  125   1          IRC48MCR = 0x80;
+  126   1          while (!(IRC48MCR & 0x01));
+  127   1          usb_init();
+  128   1          //-------------------------
+  129   1      
+  130   1          Timer0_Init();
+  131   1          EUSB = 1;   //IE2相关的中断位操作使能后，需要重新设置EUSB
+  132   1          EA = 1;     //打开总中断
+  133   1          
+  134   1          while(1)
+  135   1          {
+  136   2              #if(VirtualDevice)
+                       SoftwareMarquee();
+                       #else
+  139   2              HardwareMarquee();
+  140   2              #endif
+  141   2          }
+  142   1      }
+  143          
+  144          void SoftwareMarquee(void)
+  145          {
+  146   1          LED40_SendData(LED_Buf[index++], 7);            //控制DIP40的各个管脚上LED的状态
+  147   1          if(index >= 34) index = 0;
+  148   1      
+  149   1          delay_ms(250);
+  150   1      }
+  151          
+  152          void HardwareMarquee(void)
+  153          {
+  154   1          P10 = 0;            //LED On
+  155   1          delay_ms(250);
+  156   1          P10 = 1;            //LED Off
+  157   1          P11 = 0;            //LED On
+  158   1          delay_ms(250);
+  159   1          P11 = 1;            //LED Off
+  160   1          P52 = 0;            //LED On
+  161   1          delay_ms(250);
+  162   1          P52 = 1;            //LED Off
+  163   1          P13 = 0;            //LED On
+  164   1          delay_ms(250);
+  165   1          P13 = 1;            //LED Off
+  166   1          P14 = 0;            //LED On
+  167   1          delay_ms(250);
+  168   1          P14 = 1;            //LED Off
+  169   1          P15 = 0;            //LED On
+  170   1          delay_ms(250);
+  171   1          P15 = 1;            //LED Off
+  172   1          P16 = 0;            //LED On
+  173   1          delay_ms(250);
+  174   1          P16 = 1;            //LED Off
+  175   1          P17 = 0;            //LED On
+  176   1          delay_ms(250);
+  177   1          P17 = 1;            //LED Off
+  178   1      
+  179   1          P46 = 0;            //LED On
+  180   1          delay_ms(250);
+  181   1          P46 = 1;            //LED Off
+  182   1          P47 = 0;            //LED On
+  183   1          delay_ms(250);
+  184   1          P47 = 1;            //LED Off
+  185   1          P32 = 0;            //LED On
+  186   1          delay_ms(250);
+  187   1          P32 = 1;            //LED Off
+  188   1          P33 = 0;            //LED On
+  189   1          delay_ms(250);
+  190   1          P33 = 1;            //LED Off
+C251 COMPILER V5.60.0,  LED                                                                11/07/22  11:40:15  PAGE 4   
+
+  191   1          P34 = 0;            //LED On
+  192   1          delay_ms(250);
+  193   1          P34 = 1;            //LED Off
+  194   1          P35 = 0;            //LED On
+  195   1          delay_ms(250);
+  196   1          P35 = 1;            //LED Off
+  197   1          P36 = 0;            //LED On
+  198   1          delay_ms(250);
+  199   1          P36 = 1;            //LED Off
+  200   1          P37 = 0;            //LED On
+  201   1          delay_ms(250);
+  202   1          P37 = 1;            //LED Off
+  203   1      
+  204   1          P20 = 0;            //LED On
+  205   1          delay_ms(250);
+  206   1          P20 = 1;            //LED Off
+  207   1          P21 = 0;            //LED On
+  208   1          delay_ms(250);
+  209   1          P21 = 1;            //LED Off
+  210   1          P22 = 0;            //LED On
+  211   1          delay_ms(250);
+  212   1          P22 = 1;            //LED Off
+  213   1          P23 = 0;            //LED On
+  214   1          delay_ms(250);
+  215   1          P23 = 1;            //LED Off
+  216   1          P24 = 0;            //LED On
+  217   1          delay_ms(250);
+  218   1          P24 = 1;            //LED Off
+  219   1          P25 = 0;            //LED On
+  220   1          delay_ms(250);
+  221   1          P25 = 1;            //LED Off
+  222   1          P26 = 0;            //LED On
+  223   1          delay_ms(250);
+  224   1          P26 = 1;            //LED Off
+  225   1          P27 = 0;            //LED On
+  226   1          delay_ms(250);
+  227   1          P27 = 1;            //LED Off
+  228   1      
+  229   1          P54 = 0;            //LED On (需要短接JP1)
+  230   1          delay_ms(250);
+  231   1          P54 = 1;            //LED Off
+  232   1          P45 = 0;            //LED On
+  233   1          delay_ms(250);
+  234   1          P45 = 1;            //LED Off
+  235   1      
+  236   1          P07 = 0;            //LED On
+  237   1          delay_ms(250);
+  238   1          P07 = 1;            //LED Off
+  239   1          P06 = 0;            //LED On
+  240   1          delay_ms(250);
+  241   1          P06 = 1;            //LED Off
+  242   1          P05 = 0;            //LED On
+  243   1          delay_ms(250);
+  244   1          P05 = 1;            //LED Off
+  245   1          P04 = 0;            //LED On
+  246   1          delay_ms(250);
+  247   1          P04 = 1;            //LED Off
+  248   1          P03 = 0;            //LED On
+  249   1          delay_ms(250);
+  250   1          P03 = 1;            //LED Off
+  251   1          P02 = 0;            //LED On
+  252   1          delay_ms(250);
+  253   1          P02 = 1;            //LED Off
+  254   1          P01 = 0;            //LED On
+  255   1          delay_ms(250);
+  256   1          P01 = 1;            //LED Off
+C251 COMPILER V5.60.0,  LED                                                                11/07/22  11:40:15  PAGE 5   
+
+  257   1          P00 = 0;            //LED On
+  258   1          delay_ms(250);
+  259   1          P00 = 1;            //LED Off
+  260   1      }
+  261          
+  262          //========================================================================
+  263          // 函数: void delay_ms(u8 ms)
+  264          // 描述: 延时函数。
+  265          // 参数: ms,要延时的ms数, 这里只支持1~255ms. 自动适应主时钟.
+  266          // 返回: none.
+  267          // 版本: VER1.0
+  268          // 日期: 2022-6-3
+  269          // 备注: 
+  270          //========================================================================
+  271          void delay_ms(u8 ms)
+  272          {
+  273   1          u16 i;
+  274   1          do{
+  275   2              i = MAIN_Fosc / 6000;
+  276   2              while(--i);   //6T per loop
+  277   2          }while(--ms);
+  278   1      }
+  279          
+  280          //========================================================================
+  281          // 函数: void Timer0_Init(void)
+  282          // 描述: 定时器0初始化函数。
+  283          // 参数: none.
+  284          // 返回: none.
+  285          // 版本: VER1.0
+  286          // 日期: 2022-6-2
+  287          // 备注: 
+  288          //========================================================================
+  289          void Timer0_Init(void)
+  290          {
+  291   1          // Timer0初始化
+  292   1          AUXR = 0x80;    //Timer0 set as 1T, 16 bits timer auto-reload, 
+  293   1          TH0 = (u8)(Timer0_Reload / 256);
+  294   1          TL0 = (u8)(Timer0_Reload % 256);
+  295   1          ET0 = 1;    //Timer0 interrupt enable
+  296   1          TR0 = 1;    //Tiner0 run
+  297   1      }
+  298          
+  299          //========================================================================
+  300          // 函数: void KeyResetScan(void)
+  301          // 描述: P3.2口按键长按1秒触发软件复位，进入USB下载模式。
+  302          // 参数: none.
+  303          // 返回: none.
+  304          // 版本: VER1.0
+  305          // 日期: 2022-6-11
+  306          // 备注: 
+  307          //========================================================================
+  308          void KeyResetScan(void)
+  309          {
+  310   1          if(!P32)
+  311   1          {
+  312   2              if(!Key_Flag)
+  313   2              {
+  314   3                  Key_cnt++;
+  315   3                  if(Key_cnt >= 1000)         //连续1000ms有效按键检测
+  316   3                  {
+  317   4                      Key_Flag = 1;           //设置按键状态，防止重复触发
+  318   4      
+  319   4                      USBCON = 0x00;      //清除USB设置
+  320   4                      USBCLK = 0x00;
+  321   4                      IRC48MCR = 0x00;
+  322   4                      
+C251 COMPILER V5.60.0,  LED                                                                11/07/22  11:40:15  PAGE 6   
+
+  323   4                      delay_ms(10);
+  324   4                      IAP_CONTR = 0x60;   //触发软件复位，从ISP开始执行
+  325   4                      while (1);
+  326   4                  }
+  327   3              }
+  328   2          }
+  329   1          else
+  330   1          {
+  331   2              Key_cnt = 0;
+  332   2              Key_Flag = 0;
+  333   2          }
+  334   1      }
+  335          
+  336          //========================================================================
+  337          // 函数: void timer0_int(void)
+  338          // 描述: Timer0 1ms中断函数。
+  339          // 参数: none.
+  340          // 返回: none.
+  341          // 版本: VER1.0
+  342          // 日期: 2022-6-11
+  343          // 备注: 
+  344          //========================================================================
+  345          void timer0_int(void) interrupt 1  //1ms 中断函数
+  346          {
+  347   1          if (bUsbOutReady) //USB调试及复位所需代码
+  348   1          {
+  349   2      //        memcpy(UsbInBuffer, UsbOutBuffer, 64);      //原路返回, 用于测试HID
+  350   2      //        usb_IN();
+  351   2              
+  352   2              usb_OUT_done();
+  353   2          }
+  354   1      
+  355   1          KeyResetScan();   //P3.2口按键触发软件复位，进入USB下载模式，不需要此功能可删除本行代码
+  356   1      }
+  357          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       853     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =        15     ------
+  bit size             =         1     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        38     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,84 +1,223 @@
-C251 COMPILER V5.60.0,  CH395SPI_HW                                                        12/03/23  16:07:59  PAGE 1   
+C251 COMPILER V5.60.0,  CH395SPI_HW                                                        23/03/23  08:54:30  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE CH395SPI_HW
 OBJECT MODULE PLACED IN .\Objects\CH395SPI_HW.obj
-COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE Sources\Driver\ch395\CH395SPI_HW.C XSMALL FUNCTIONS(REENTRANT) OPTIMIZ
-                    -E(4,SPEED) BROWSE INCDIR(.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\ST
-                    -C32G12K128;.\Sources\Driver\inc;.\Sources\Task\inc) DEBUG PRINT(.\Listings\CH395SPI_HW.lst) TABS(2) OBJECT(.\Objects\CH3
-                    -95SPI_HW.obj) 
+COMPILER INVOKED BY: C:\Keil_v5\C251\BIN\C251.EXE Sources\ch395\CH395SPI_HW.C XSMALL FUNCTIONS(REENTRANT) OPTIMIZE(4,SPE
+                    -ED) BROWSE INCDIR(.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32G12K
+                    -128;.\Sources\Driver\inc;.\Sources\Task\inc;.\Sources\Driver\ch395;.\Sources\ch395;.\PUB) DEBUG PRINT(.\Listings\CH395SP
+                    -I_HW.lst) TABS(2) OBJECT(.\Objects\CH395SPI_HW.obj) 
 
 stmt  level    source
 
-    1          /********************************** (C) COPYRIGHT *******************************
-    2          * File Name          : CH395SPI_HW.C
-    3          * Author             : WCH
-    4          * Version            : V1.1
-    5          * Date               : 2014/8/1
-    6          * Description        : CH395芯片 硬件SPI串行连接的硬件抽象层 V1.0
-    7          *
-    8          *******************************************************************************/
-    9          
+    1          
+    2          /********************************** (C) COPYRIGHT *********************************
+    3          * File Name          : CH395SPI_HW
+    4          * Author             : WCH
+    5          * Version            : V1.1
+    6          * Date               : 2014/8/1
+    7          * Description        : CH395 硬件spi接口函数
+    8          *             
+    9          **********************************************************************************/
    10          
-   11          #include "ch395spi_hw.h"
-*** WARNING C34 IN LINE 34 OF Sources\Driver\ch395\spi.h: 'hspi3': missing declaration specifiers
-*** ERROR C42 IN LINE 34 OF Sources\Driver\ch395\spi.h: 'hspi3': not in formal parameter list
-*** ERROR C42 IN LINE 40 OF Sources\Driver\ch395\spi.h: 'MX_SPI3_Init': not in formal parameter list
-*** ERROR C29 IN LINE 50 OF Sources\Driver\ch395\ch395spi_hw.h: formal/parameter has illegal storage class
-*** ERROR C25 IN LINE 52 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near 'SPI_HandleTypeDef'
-*** WARNING C34 IN LINE 52 OF Sources\Driver\ch395\ch395spi_hw.h: 'HSPI': missing declaration specifiers
-*** ERROR C42 IN LINE 52 OF Sources\Driver\ch395\ch395spi_hw.h: 'HSPI': not in formal parameter list
-*** WARNING C34 IN LINE 53 OF Sources\Driver\ch395\ch395spi_hw.h: 'GPIO_TypeDef': missing declaration specifiers
-*** ERROR C42 IN LINE 53 OF Sources\Driver\ch395\ch395spi_hw.h: 'GPIO_TypeDef': not in formal parameter list
-*** ERROR C25 IN LINE 53 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
-*** WARNING C34 IN LINE 53 OF Sources\Driver\ch395\ch395spi_hw.h: 'CS_PORT': missing declaration specifiers
-*** ERROR C42 IN LINE 53 OF Sources\Driver\ch395\ch395spi_hw.h: 'CS_PORT': not in formal parameter list
-*** ERROR C42 IN LINE 54 OF Sources\Driver\ch395\ch395spi_hw.h: 'CS_PIN': not in formal parameter list
-*** WARNING C34 IN LINE 55 OF Sources\Driver\ch395\ch395spi_hw.h: 'GPIO_TypeDef': missing declaration specifiers
-*** ERROR C42 IN LINE 55 OF Sources\Driver\ch395\ch395spi_hw.h: 'GPIO_TypeDef': not in formal parameter list
-*** ERROR C25 IN LINE 55 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
-*** WARNING C34 IN LINE 55 OF Sources\Driver\ch395\ch395spi_hw.h: 'INT_PORT': missing declaration specifiers
-*** ERROR C42 IN LINE 55 OF Sources\Driver\ch395\ch395spi_hw.h: 'INT_PORT': not in formal parameter list
-*** ERROR C42 IN LINE 56 OF Sources\Driver\ch395\ch395spi_hw.h: 'INT_PIN': not in formal parameter list
-*** WARNING C34 IN LINE 57 OF Sources\Driver\ch395\ch395spi_hw.h: 'GPIO_TypeDef': missing declaration specifiers
-*** ERROR C42 IN LINE 57 OF Sources\Driver\ch395\ch395spi_hw.h: 'GPIO_TypeDef': not in formal parameter list
-*** ERROR C25 IN LINE 57 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
-*** WARNING C34 IN LINE 57 OF Sources\Driver\ch395\ch395spi_hw.h: 'RST_PORT': missing declaration specifiers
-*** ERROR C42 IN LINE 57 OF Sources\Driver\ch395\ch395spi_hw.h: 'RST_PORT': not in formal parameter list
-*** ERROR C42 IN LINE 58 OF Sources\Driver\ch395\ch395spi_hw.h: 'RST_PIN': not in formal parameter list
-*** ERROR C42 IN LINE 60 OF Sources\Driver\ch395\ch395spi_hw.h: 'CH395Index': not in formal parameter list
-*** ERROR C42 IN LINE 61 OF Sources\Driver\ch395\ch395spi_hw.h: 'IPAddr': not in formal parameter list
-*** ERROR C42 IN LINE 62 OF Sources\Driver\ch395\ch395spi_hw.h: 'GWIPAddr': not in formal parameter list
-*** ERROR C42 IN LINE 63 OF Sources\Driver\ch395\ch395spi_hw.h: 'MASKAddr': not in formal parameter list
-*** ERROR C42 IN LINE 64 OF Sources\Driver\ch395\ch395spi_hw.h: 'MacAddr': not in formal parameter list
-*** ERROR C42 IN LINE 65 OF Sources\Driver\ch395\ch395spi_hw.h: 'PHYStat': not in formal parameter list
-*** ERROR C42 IN LINE 66 OF Sources\Driver\ch395\ch395spi_hw.h: 'MackFilt': not in formal parameter list
-*** ERROR C42 IN LINE 67 OF Sources\Driver\ch395\ch395spi_hw.h: 'RetranCount': not in formal parameter list
-*** ERROR C42 IN LINE 68 OF Sources\Driver\ch395\ch395spi_hw.h: 'RetranPeriod': not in formal parameter list
-*** ERROR C42 IN LINE 69 OF Sources\Driver\ch395\ch395spi_hw.h: 'IntfMode': not in formal parameter list
-*** ERROR C25 IN LINE 70 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '}'
-*** WARNING C34 IN LINE 71 OF Sources\Driver\ch395\ch395spi_hw.h: 'CH395_HandleTypedef': missing declaration specifiers
-*** ERROR C25 IN LINE 103 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
-*** ERROR C25 IN LINE 104 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
-*** ERROR C25 IN LINE 105 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
-*** ERROR C25 IN LINE 106 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
-*** ERROR C25 IN LINE 107 OF Sources\Driver\ch395\ch395spi_hw.h: syntax error near '*'
-   12          
-   13          /*******************************************************************************
-   14          * Function Name  : mDelayuS
-C251 COMPILER V5.60.0,  CH395SPI_HW                                                        12/03/23  16:07:59  PAGE 2   
+   11          /*********************************************************************************
+   12          * Function Name  : mDelayuS
+   13          * Description    : 延时指定微秒时间,根据单片机主频调整,不精确
+   14          * Input          : us---延时时间值
+   15          * Output         : None
+   16          * Return         : None
+   17          *********************************************************************************/
+   18          void mDelayuS( uint8_t us )
+*** ERROR C25 IN LINE 18 OF Sources\ch395\CH395SPI_HW.C: syntax error near 'us'
+   19          {
+*** WARNING C35 IN LINE 19 OF Sources\ch395\CH395SPI_HW.C: 'mDelayuS': uses old-style declarator
+   20   1        int i;  
+   21   1        while( us -- ) 
+   22   1        {
+   23   2          for( i =20; i != 0; -- i );
+   24   2        }
+*** ERROR C83 IN LINE 21 OF Sources\ch395\CH395SPI_HW.C: '--': incompatible types
+*** ERROR C122 IN LINE 21 OF Sources\ch395\CH395SPI_HW.C: 'function': unknown size
+*** ERROR C100 IN LINE 21 OF Sources\ch395\CH395SPI_HW.C: '--': left operand must be l-value
+   25   1      }
+*** WARNING C47 IN LINE 18 OF Sources\ch395\CH395SPI_HW.C: 'uint8_t': unreferenced parameter
+   26          
+   27          /**********************************************************************************
+   28          * Function Name  : mDelaymS
+   29          * Description    : 延时指定毫秒时间,根据单片机主频调整,不精确
+   30          * Input          : ms---延时时间值
+   31          * Output         : None
+   32          * Return         : None
+   33          *********************************************************************************/
+   34          void mDelaymS( uint8_t ms )
+*** ERROR C25 IN LINE 34 OF Sources\ch395\CH395SPI_HW.C: syntax error near 'ms'
+   35          {
+*** WARNING C35 IN LINE 35 OF Sources\ch395\CH395SPI_HW.C: 'mDelaymS': uses old-style declarator
+   36   1        int i;
+   37   1        
+   38   1        while( ms -- ) 
+   39   1        {
+   40   2          for( i = 0; i != 20000; i++ );
+   41   2        }
+*** ERROR C83 IN LINE 38 OF Sources\ch395\CH395SPI_HW.C: '--': incompatible types
+*** ERROR C122 IN LINE 38 OF Sources\ch395\CH395SPI_HW.C: 'function': unknown size
+*** ERROR C100 IN LINE 38 OF Sources\ch395\CH395SPI_HW.C: '--': left operand must be l-value
+   42   1      }
+*** WARNING C47 IN LINE 34 OF Sources\ch395\CH395SPI_HW.C: 'uint8_t': unreferenced parameter
+   43          
+   44           /**********************************************************************************
+C251 COMPILER V5.60.0,  CH395SPI_HW                                                        23/03/23  08:54:30  PAGE 2   
 
-   15          * Description    : 延时指定微秒时间,根据单片机主频调整,不精确
-   16          * Input          : us---延时时间值
-   17          * Output         : None
-   18          * Return         : None
-   19          *******************************************************************************/
-   20          void mDelayuS( uint8_t us )
-   21          {
-   22   1          while(us--)
-   23   1          {
-   24   2              for(int i=0; i<180; i++); //简单延时 并不准确    F429@180MHZ
-*** ERROR C25 IN LINE 24 OF Sources\Driver\ch395\CH395SPI_HW.C: syntax error near 'int'
-*** ERROR C7 IN LINE 24 OF Sources\Driver\ch395\CH395SPI_HW.C: compilation aborted
+   45          * Function Name  : xEndCH395Cmd
+   46          * Description    : 取消片选
+   47          * Input          : none
+   48          * Output         : None
+   49          * Return         : None
+   50          *********************************************************************************/
+   51          void xEndCH395Cmd( void )
+   52          { 
+   53   1       R32_PB_OUT |= CAT0 ;
+*** ERROR C67 IN LINE 53 OF Sources\ch395\CH395SPI_HW.C: 'R32_PB_OUT': undefined identifier
+*** ERROR C67 IN LINE 53 OF Sources\ch395\CH395SPI_HW.C: 'CAT0': undefined identifier
+   54   1      }
+   55          
+   56           /**********************************************************************************
+   57          * Function Name  : xCH395CmdStart
+   58          * Description    : 片选
+   59          * Input          : none
+   60          * Output         : None
+   61          * Return         : None
+   62          *********************************************************************************/
+   63          void xCH395CmdStart(void )
+   64          {
+   65   1        R32_PB_CLR |= CAT0 ;
+*** ERROR C67 IN LINE 65 OF Sources\ch395\CH395SPI_HW.C: 'R32_PB_CLR': undefined identifier
+*** ERROR C67 IN LINE 65 OF Sources\ch395\CH395SPI_HW.C: 'CAT0': undefined identifier
+   66   1      }
+   67          
+   68           /**********************************************************************************
+   69          * Function Name  : CH395_PROT_INIT
+   70          * Description    : 接口初始化
+   71          * Input          : none
+   72          * Output         : None
+   73          * Return         : None
+   74          *********************************************************************************/
+   75          void CH395_PROT_INIT ( )
+   76          {
+   77   1        R8_SPI0_CTRL_MOD = RB_SPI_MOSI_OE|RB_SPI_SCK_OE;//MOSI=>SDI
+*** ERROR C67 IN LINE 77 OF Sources\ch395\CH395SPI_HW.C: 'R8_SPI0_CTRL_MOD': undefined identifier
+*** ERROR C67 IN LINE 77 OF Sources\ch395\CH395SPI_HW.C: 'RB_SPI_MOSI_OE': undefined identifier
+*** ERROR C67 IN LINE 77 OF Sources\ch395\CH395SPI_HW.C: 'RB_SPI_SCK_OE': undefined identifier
+   78   1        R8_SPI0_CLOCK_DIV = 0x0a;/* 10分频。100/10=10M */
+*** ERROR C67 IN LINE 78 OF Sources\ch395\CH395SPI_HW.C: 'R8_SPI0_CLOCK_DIV': undefined identifier
+   79   1        R32_PB_DIR |= (MOSI | SCK0 | SCS |CAT0  );/* MISO(PB15)为输入，MOSI(PB14)，SCS(PB13)为输出： *
+             -/
+*** ERROR C67 IN LINE 79 OF Sources\ch395\CH395SPI_HW.C: 'R32_PB_DIR': undefined identifier
+*** ERROR C67 IN LINE 79 OF Sources\ch395\CH395SPI_HW.C: 'MOSI': undefined identifier
+*** ERROR C67 IN LINE 79 OF Sources\ch395\CH395SPI_HW.C: 'SCK0': undefined identifier
+*** ERROR C67 IN LINE 79 OF Sources\ch395\CH395SPI_HW.C: 'SCS': undefined identifier
+*** ERROR C67 IN LINE 79 OF Sources\ch395\CH395SPI_HW.C: 'CAT0': undefined identifier
+   80   1        R32_PB_PU  |=  CAT0  ; 
+*** ERROR C67 IN LINE 80 OF Sources\ch395\CH395SPI_HW.C: 'R32_PB_PU': undefined identifier
+*** ERROR C67 IN LINE 80 OF Sources\ch395\CH395SPI_HW.C: 'CAT0': undefined identifier
+   81   1        R8_SPI0_CTRL_DMA = 0;/* 不启动DMA方式 */
+*** ERROR C67 IN LINE 81 OF Sources\ch395\CH395SPI_HW.C: 'R8_SPI0_CTRL_DMA': undefined identifier
+   82   1      }
+   83          
+   84           /**********************************************************************************
+   85          * Function Name  : SPI0_MASTER_Trans
+   86          * Description    : spi发送数据
+   87          * Input          : data：待发送数据
+   88          * Output         : None
+   89          * Return         : None
+   90          *********************************************************************************/
+   91          void SPI0_MASTER_Trans( uint8_t data )
+*** ERROR C25 IN LINE 91 OF Sources\ch395\CH395SPI_HW.C: syntax error near 'data'
+   92          {
+C251 COMPILER V5.60.0,  CH395SPI_HW                                                        23/03/23  08:54:30  PAGE 3   
 
-C251 COMPILATION COMPLETE.  9 WARNING(S),  35 ERROR(S)
+*** WARNING C35 IN LINE 92 OF Sources\ch395\CH395SPI_HW.C: 'SPI0_MASTER_Trans': uses old-style declarator
+   93   1        R32_SPI0_FIFO = data;
+*** ERROR C67 IN LINE 93 OF Sources\ch395\CH395SPI_HW.C: 'R32_SPI0_FIFO': undefined identifier
+*** ERROR C25 IN LINE 93 OF Sources\ch395\CH395SPI_HW.C: syntax error near 'data'
+*** ERROR C25 IN LINE 93 OF Sources\ch395\CH395SPI_HW.C: syntax error near ';'
+   94   1        R16_SPI0_TOTAL_CNT = 0x01;
+*** WARNING C194 IN LINE 94 OF Sources\ch395\CH395SPI_HW.C: obsolete declaration: use '<type> data  R16_SPI0_TOTAL_CNT'
+   95   1        while( R8_SPI0_FIFO_COUNT != 0 );                               /*等待数据发送完成*/
+*** ERROR C25 IN LINE 95 OF Sources\ch395\CH395SPI_HW.C: syntax error near 'while'
+*** ERROR C25 IN LINE 95 OF Sources\ch395\CH395SPI_HW.C: syntax error near '!='
+   96   1      }
+   97   1      
+   98   1       /**********************************************************************************
+   99   1      * Function Name  : SPI0_MASTER_Recv
+  100   1      * Description    : spi接收数据
+  101   1      * Input          : NOne
+  102   1      * Output         : 接收到的数据
+  103   1      * Return         : None
+  104   1      *********************************************************************************/
+  105   1      uint8_t SPI0_MASTER_Recv( void )
+  106   1      {
+*** ERROR C42 IN LINE 106 OF Sources\ch395\CH395SPI_HW.C: 'SPI0_MASTER_Recv': not in formal parameter list
+*** ERROR C25 IN LINE 106 OF Sources\ch395\CH395SPI_HW.C: syntax error near '{'
+  107   1      
+  108   1        R32_SPI0_FIFO = 0xff;
+  109   1        R16_SPI0_TOTAL_CNT = 0x01;
+  110   1        while( R8_SPI0_FIFO_COUNT != 0 );                                 /*等待数据回来*/
+  111   1        return  R8_SPI0_BUFFER;
+  112   1      }
+  113   1       /**********************************************************************************
+  114   1      * Function Name  : xWriteCH395Cmd
+  115   1      * Description    : 写命令
+  116   1      * Input          : 待写的命令
+  117   1      * Output         : None
+  118   1      * Return         : None
+  119   1      *********************************************************************************/
+  120   1      void xWriteCH395Cmd( uint8_t mCmd )  
+  121   1      {
+  122   1        R32_PB_OUT |= CAT0 ;         
+  123   1        R32_PB_CLR |= CAT0 ;                
+  124   1        SPI0_MASTER_Trans( mCmd );                    
+  125   1        mDelayuS(1 );                     
+  126   1      }
+  127   1      
+  128   1       /**********************************************************************************
+  129   1      * Function Name  : xWriteCH395Data
+  130   1      * Description    : 写数据
+  131   1      * Input          : 待写的数据
+  132   1      * Output         : None
+  133   1      * Return         : None
+  134   1      *********************************************************************************/
+  135   1      void xWriteCH395Data( uint8_t mData ) 
+  136   1      {
+  137   1        SPI0_MASTER_Trans( mData );
+  138   1      }
+  139   1      
+  140   1      /**********************************************************************************
+  141   1      * Function Name  : xReadCH395Data
+  142   1      * Description    : 读数据
+  143   1      * Input          : None
+  144   1      * Output         : 读到的数据
+  145   1      * Return         : None
+  146   1      *********************************************************************************/
+  147   1      uint8_t xReadCH395Data( void ) 
+  148   1      {
+  149   1        return( SPI0_MASTER_Recv( ) );
+C251 COMPILER V5.60.0,  CH395SPI_HW                                                        23/03/23  08:54:30  PAGE 4   
+
+  150   1      
+  151   1      }
+  152   1      
+  153   1       /**********************************************************************************
+  154   1      * Function Name  : Query395Interrupt
+  155   1      * Description    : 查询中断
+  156   1      * Input          : None
+  157   1      * Output         : None
+  158   1      * Return         : 中断状态
+  159   1      *********************************************************************************/
+  160   1      uint8_t Query395Interrupt( void )
+  161   1      {
+  162   1        return( (R32_PB_PIN & PWM0) ? FALSE : TRUE );  
+  163   1      }
+*** ERROR C7 IN LINE 163 OF Sources\ch395\CH395SPI_HW.C: compilation aborted
+
+C251 COMPILATION COMPLETE.  6 WARNING(S),  33 ERROR(S)
