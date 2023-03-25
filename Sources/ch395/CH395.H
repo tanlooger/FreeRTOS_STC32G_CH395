@@ -17,6 +17,9 @@
 #define PORTCHANGE       0x02
 #define RECVDATA         0x04
 
+
+
+
 extern UINT8 xdata CH395MACAddr[6];                                 /* CH395MAC地址 */
 extern UINT8 xdata CH395IPAddr[4];                                  /* CH395IP地址 */
 extern UINT8 xdata CH395GWIPAddr[4];                                /* CH395网关 */

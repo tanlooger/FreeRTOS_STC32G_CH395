@@ -80,6 +80,8 @@ typedef struct _st_http_request
 	uint8_t URI[MAX_URI_SIZE];			
 }st_http_request;
 
+extern st_http_request *http_request;  
+
 
 extern void ParseHttpRequest(st_http_request *, uint8_t *);		
 
