@@ -1,6 +1,0 @@
-"timer.obj",
-"..\COMM\stc_usb_hid_32g.LIB" 
-TO "timer" 
-CASE DISABLEWARNING (57) 
-CLASSES (EDATA (0x0-0xFFF), 
-HDATA (0x0-0xFFF)) 
