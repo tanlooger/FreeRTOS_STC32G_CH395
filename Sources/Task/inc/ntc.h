@@ -3,7 +3,7 @@
 #define NTC_H
 
 
-/* NTCÈÎÎñº¯Êý */
+/* NTCä»»åŠ¡å‡½æ•° */
 portTASK_FUNCTION( vNtcTask, pvParameters );
 
 #endif

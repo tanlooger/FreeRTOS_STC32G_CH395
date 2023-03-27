@@ -22,7 +22,6 @@ bit B_ULinRX2_Flag;
 // 返回: none.
 // 版本: V1.0, 2020-09-23
 //========================================================================
-
 #ifdef UART1
 void UART1_ISR_Handler (void) interrupt UART1_VECTOR
 {

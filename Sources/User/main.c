@@ -25,46 +25,21 @@
 #include "MatrixKey.h"
 #include "i2c_ps.h"
 #include "pwmb.h"
-//#include "ch395.h"
-//#include "task_uart1.h"
-#include <STC32G.H>
-#include "usb.h"
-
-
-
-
-
-
-
-
 
 void vSystemInit( void );
 
-
-
-
 void main( void )
 {
-	
     /* 系统初始化 */
     vSystemInit();
-	
-	
-			
-
-
-
-
 
 	/* 创建任务 */
-
     xTaskCreate((TaskFunction_t )vDisplayTask,
                 (const char*    )"DISPLAY",
                 (uint16_t       )configDEFAULT_STACK_SIZE,
                 (void*          )NULL,
                 (UBaseType_t    )(configDEFAULT_PRIORITIES + 1),
                 (TaskHandle_t*  )NULL);
-									/*
     xTaskCreate((TaskFunction_t )vRtcTask,
                 (const char*    )"RTC",
                 (uint16_t       )configDEFAULT_STACK_SIZE,
@@ -81,6 +56,12 @@ void main( void )
                 (const char*    )"NTC",
                 (uint16_t       )configDEFAULT_STACK_SIZE,
                 (void*          )NULL,
+                (UBaseType_t    )(configDEFAULT_PRIORITIES),
+                (TaskHandle_t*  )NULL);
+    xTaskCreate((TaskFunction_t )vUart2_3Task,
+                (const char*    )"UART2_3",
+                (uint16_t       )configDEFAULT_STACK_SIZE,
+                (void*          )1000,  //注意pvParameters参数传地址或者立即数时只有低24位是有效位，最高8位编译时会自动填0. 可通过变量或者常量传送32字节数据.
                 (UBaseType_t    )(configDEFAULT_PRIORITIES),
                 (TaskHandle_t*  )NULL);
     xTaskCreate((TaskFunction_t )vMatrixKeyTask,
@@ -101,25 +82,6 @@ void main( void )
                 (void*          )NULL,
                 (UBaseType_t    )(configDEFAULT_PRIORITIES),
                 (TaskHandle_t*  )NULL);
-								*/
-
-								
-		    xTaskCreate((TaskFunction_t )vUart2_3Task,
-                (const char*    )"UART2_3",
-                (uint16_t       )configDEFAULT_STACK_SIZE,
-                (void*          )1000,  //注意pvParameters参数传地址或者立即数时只有低24位是有效位，最高8位编译时会自动填0. 可通过变量或者常量传送32字节数据.
-                (UBaseType_t    )(configDEFAULT_PRIORITIES),
-                (TaskHandle_t*  )NULL);
-								
-								
-								/*
-	  xTaskCreate((TaskFunction_t )vUart1Task,
-                (const char*    )"UART1",
-                (uint16_t       )configDEFAULT_STACK_SIZE,
-                (void*          )1000,  //注意pvParameters参数传地址或者立即数时只有低24位是有效位，最高8位编译时会自动填0. 可通过变量或者常量传送32字节数据.
-                (UBaseType_t    )(configDEFAULT_PRIORITIES),
-                (TaskHandle_t*  )NULL);
-								*/
 
     /* 启动任务调度器开始任务调度 */
     vTaskStartScheduler();
@@ -127,11 +89,3 @@ void main( void )
     /* 正常情况下不会运行到此处 */
     while (1);
 }
-
-
-
-
-
-
-
-
