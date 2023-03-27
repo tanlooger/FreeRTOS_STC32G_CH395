@@ -1,4 +1,8 @@
-/*
+
+rm -rf Listings Objects FreeRTOS_STC32G_Demo.uvgui.han FreeRTOS_STC32G_Demo.uvopt
+
+
+
 
     本程序的代码是以FreeRTOS官方的202112.00版本（内核版本为V10.4.6）的原始代码为基础进行全新移植
     目前STC官方命名的本版本号是：V1.0.2
@@ -34,4 +38,5 @@
 	|    |----include (用户程序头文件目录)
 	|----FreeRTOS (FreeRTOS核心代码目录)
 
-*/
+
+

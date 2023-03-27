@@ -9,6 +9,37 @@ static void prvDisplayUpdate( void );
 static uint8_t ucDisplayIndex;                          //显示位索引
 uint8_t pucLEDBuffer[8];                                //显示缓冲
 
+//P3.2口按键复位所需变量
+bit Key_Flag;
+uint8_t Key_cnt;
+void KeyResetScan(void)
+{
+    if(!P32)
+    {
+        if(!Key_Flag)
+        {
+            Key_cnt++;
+            if(Key_cnt >= 100)		//连续1000ms有效按键检测
+            {
+                Key_Flag = 1;		//设置按键状态，防止重复触发
+
+                USBCON = 0x00;      //清除USB设置
+                USBCLK = 0x00;
+                IRC48MCR = 0x00;
+                
+                vTaskDelay(10);
+                IAP_CONTR = 0x60;   //触发软件复位，从ISP开始执行
+                while (1);
+            }
+        }
+    }
+    else
+    {
+        Key_cnt = 0;
+        Key_Flag = 0;
+    }
+}
+
 
 /* 显示任务函数 */
 portTASK_FUNCTION( vDisplayTask, pvParameters )
@@ -19,8 +50,11 @@ portTASK_FUNCTION( vDisplayTask, pvParameters )
     while(1)
     {
         prvDisplayUpdate();
+			
+			    KeyResetScan();   //P3.2口按键触发软件复位，进入USB下载模式，不需要此功能可删除本行代码
+
         
-        vTaskDelay(2);
+        vTaskDelay(10);
     }
     
     vTaskDelete(NULL);
