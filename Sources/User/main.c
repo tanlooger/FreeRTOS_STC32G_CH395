@@ -37,38 +37,14 @@
 
 
 
-//void KeyResetScan(void);
 
 void vSystemInit( void );
 
-//void timer4_int (void) interrupt 1 //1毫秒中断函数
-//{
-	//P3.2口按健触发软件复位，进入USB下载模式
-	//KeyResetScan();
-//}
 
 
 
 void main( void )
 {
-	//USB调试及复位所需定义
-		//char *USER_DEVICEDESC = NULL;
-		//char *USER_PRODUCTDESC = NULL;
-		//char *USER_STCISPCMD = "@STCISP#";//设置自动复位到ISP区的用户接口命令
-		//USB调试及复位所需代码
-		//P3M0 &= ~0x03;
-		//P3M1 |=0x03;
-		//IRC48MCR = 0x80;
-		//while(!(IRC48MCR & 0x01));
-		//usb_init();
-		//EA=1; //打开总中断 
-		//EUSB = 1;   //IE2相关的中断位操作使能后，需要重新设置EUSB
-		//USB调试及复位所需代码，放在循环函数里
-		//if(bUsbOutReady) {usb_OUT_done();}
-	
-
-
-
 	
     /* 系统初始化 */
     vSystemInit();

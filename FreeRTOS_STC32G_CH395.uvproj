@@ -430,11 +430,6 @@
           <GroupName>user</GroupName>
           <Files>
             <File>
-              <FileName>请先阅读本使用方法.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\请先阅读本使用方法.txt</FilePath>
-            </File>
-            <File>
               <FileName>FreeRTOSConfig.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Sources\User\include\FreeRTOSConfig.h</FilePath>
@@ -791,18 +786,6 @@
         </Group>
         <Group>
           <GroupName>stc32lib</GroupName>
-          <Files>
-            <File>
-              <FileName>stc_usb_hid_32g.LIB</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\STC32G12k128-STC89-DEMO-NOT-POWER-OFF-USB-HID-ISP-20220713\COMM\stc_usb_hid_32g.LIB</FilePath>
-            </File>
-            <File>
-              <FileName>STC32G.H</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\STC32G12k128-STC89-DEMO-NOT-POWER-OFF-USB-HID-ISP-20220713\COMM\STC32G.H</FilePath>
-            </File>
-          </Files>
         </Group>
       </Groups>
     </Target>
