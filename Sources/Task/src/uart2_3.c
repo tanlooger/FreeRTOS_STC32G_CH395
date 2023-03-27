@@ -31,6 +31,12 @@
 #include "STC32G_UART.h"
 #include "uart2_3.h"
 
+#include "CH395INC.H"
+#include "CH395.H"
+#include "HTTPS.H"
+#include "CH395CMD.H"
+
+
 extern void TX2_write2buff(uint8_t dat);
 
 uint16_t Sec_Cnt;    //1秒计数
@@ -44,6 +50,19 @@ portTASK_FUNCTION( vUart2_3Task, pvParameters )
 
     PrintString2("STC32G UART2-UART3 Test Programme!\r\n");  //UART2发送一个字符串
     PrintString3("STC32G UART3-UART2 Test Programme!\r\n");  //UART3发送一个字符串
+	
+	
+	
+		http_request = (st_http_request*)RecvBuffer;
+   printf("CH395EVT Test Demo\n");
+   //CH395_PROT_INIT();
+ //restart:
+   //InitCH395InfParam();// 初始化CH395相关变量 
+  // i = CH395Init();//初始化CH395芯片 
+   //mStopIfError(i);
+	
+	
+	
     while(1)
     {
         Sec_Cnt++;

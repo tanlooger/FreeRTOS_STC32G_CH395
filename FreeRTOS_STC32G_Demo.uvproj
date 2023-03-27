@@ -272,7 +272,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32G12K128;.\Sources\Driver\inc;.\Sources\Task\inc</IncludePath>
+              <IncludePath>.\Sources\User;.\Sources\User\include;.\Sources\FreeRTOS\include;.\Sources\FreeRTOS\portable\STC32G12K128;.\Sources\Driver\inc;.\Sources\Task\inc;.\Sources\ch395</IncludePath>
             </VariousControls>
           </C251>
           <Ax51>
@@ -723,6 +723,56 @@
               <FileName>STC32G_UART_Isr.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Driver\isr\STC32G_UART_Isr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ch395</GroupName>
+          <Files>
+            <File>
+              <FileName>CH395.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ch395\CH395.C</FilePath>
+            </File>
+            <File>
+              <FileName>CH395.H</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\ch395\CH395.H</FilePath>
+            </File>
+            <File>
+              <FileName>CH395CMD.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ch395\CH395CMD.C</FilePath>
+            </File>
+            <File>
+              <FileName>CH395CMD.H</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\ch395\CH395CMD.H</FilePath>
+            </File>
+            <File>
+              <FileName>CH395INC.H</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\ch395\CH395INC.H</FilePath>
+            </File>
+            <File>
+              <FileName>CH395UART.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ch395\CH395UART.C</FilePath>
+            </File>
+            <File>
+              <FileName>CH395UART.H</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\ch395\CH395UART.H</FilePath>
+            </File>
+            <File>
+              <FileName>HTTPS.H</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\ch395\HTTPS.H</FilePath>
+            </File>
+            <File>
+              <FileName>HTTTPS.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ch395\HTTTPS.C</FilePath>
             </File>
           </Files>
         </Group>
