@@ -13,6 +13,8 @@
 #include "CH395INC.H"
 #include "CH395.H"
 #include "ch395cmd.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 struct  _SOCK_INF  SockInf;
 struct  _CH395_SYS  CH395Inf;  
@@ -45,8 +47,10 @@ void mStopIfError(UINT8 iError)
     printf("Error: %02X\n", (UINT16)iError);                         /* 显示错误 */
     while ( 1 ) 
     {
-        mDelaymS(200);
-        mDelaymS(200);
+        vTaskDelay(2000);
+			 
+			    printf("Error: %02X\n", (UINT16)iError);                         /* 显示错误 */
+
     }
 }
 
@@ -219,9 +223,12 @@ void CH395GlobalInterrupt(void)
 *******************************************************************************/
 UINT8  CH395Init(void)
 {
+	
+	
     UINT8 i;
-    i = CH395CMDCheckExist(0x65); 
-    printf("CH395CMDCheckExist = %2x\n",(UINT16)i);                     
+	
+		i = CH395CMDCheckExist(0x65); 
+    printf("CH395CMDCheckExist = %2x\n",(UINT16)i);  
     if(i != 0x9a)return CH395_ERR_UNKNOW;                            /* 测试命令，如果无法通过返回0XFA */
     CH395CMDSetIPAddr(CH395Inf.IPAddr);                              /* 设置CH395的IP地址 */
     CH395CMDSetGWIPAddr(CH395Inf.GWIPAddr);                          /* 设置网关地址 */

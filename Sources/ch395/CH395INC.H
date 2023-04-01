@@ -81,7 +81,7 @@ typedef unsigned char volatile                    *PUINT8V;
 #define CMD00_ENTER_SLEEP                         0x03                          /* 进入睡眠状态 */
                                                                                 
 #define CMD00_RESET_ALL                           0x05                          /* 执行硬件复位 */
-                                                                                
+                                                                                 
 #define CMD11_CHECK_EXIST                         0x06                          /* 测试通讯接口以及工作状态 */
 /* 输入: 任意数据 */                                                            
 /* 输出: 输入数据的按位取反 */                                                  

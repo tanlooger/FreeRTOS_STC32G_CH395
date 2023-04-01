@@ -299,7 +299,7 @@ void TX3_write2buff(uint8_t dat)	//写入发送缓冲，指针+1
 		S3TI = 1;				//触发发送中断
 	}
 }
-
+ 
 void PrintString3(uint8_t *puts)
 {
     for (; *puts != 0;	puts++)  TX3_write2buff(*puts); 	//遇到停止符0结束

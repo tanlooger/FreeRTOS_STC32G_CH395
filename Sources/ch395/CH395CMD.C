@@ -11,6 +11,7 @@
 #include "CH395INC.H"
 #include "ch395cmd.h"
 #include "CH395UART.h"
+#include "uart2_3.h"
 
 /********************************************************************************
 * Function Name  : CH395CMDReset
@@ -69,6 +70,8 @@ UINT8 CH395CMDCheckExist(UINT8 testdata)
     xWriteCH395Cmd(CMD11_CHECK_EXIST);
     xWriteCH395Data(testdata);
     i = xReadCH395Data();
+	
+
     //xEndCH395Cmd();
     return i;
 }
@@ -97,6 +100,7 @@ void CH395CMDSetPHY(UINT8 phystat)
 *******************************************************************************/
 UINT8 CH395CMDGetPHYStatus(void)
 {
+	
     UINT8 i;
 
     xWriteCH395Cmd(CMD01_GET_PHY_STATUS);

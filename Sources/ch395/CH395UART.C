@@ -9,6 +9,7 @@
 
 #include "FreeRTOS.h"
 #include "CH395INC.H"
+#include "STC32G_UART.h"
 
 /* 硬件相关宏定义 */
 /* 本例中的硬件连接方式如下(实际应用电路可以参照修改下述定义及子程序) */
@@ -19,6 +20,11 @@
 
 #define UART_INIT_BAUDRATE         9600                          /* 默认通讯波特率9600bps,建议通过硬件引脚设定直接选择更高的CH395的默认通讯波特率 */
 #define UART_WORK_BAUDRATE         57600                         /* 正式通讯波特率57600bps */
+
+
+
+extern void TX2_write2buff(uint8_t dat);
+
 
 
 /*******************************************************************************
@@ -97,6 +103,12 @@ void SetMCUBaudRate(void)
 *******************************************************************************/
 void xWriteCH395Cmd(uint8_t cmd)                                      
 {
+		TX2_write2buff(SER_SYNC_CODE1);
+		TX2_write2buff(SER_SYNC_CODE2);
+		TX2_write2buff(cmd);
+	
+	
+	/*
     TI = 0;
     SBUF = SER_SYNC_CODE1;                                           // 启动操作的第1个串口同步码
     while(TI == 0);
@@ -106,7 +118,8 @@ void xWriteCH395Cmd(uint8_t cmd)
     TI = 0;
     SBUF = cmd;                                                      // 串口输出 
     while(TI == 0);
-    RI = 0;                                                                 
+    RI = 0;          
+		*/
 }
 
 /********************************************************************************
@@ -117,10 +130,13 @@ void xWriteCH395Cmd(uint8_t cmd)
 * Return         : None
 *******************************************************************************/
 void  xWriteCH395Data(uint8_t mdata)
-{                                                                    /* 向CH395写数据 */
+{
+	TX2_write2buff(mdata);
+	/*
     TI = 0;
-    SBUF = mdata;                                                    /* 串口输出 */
+    SBUF = mdata;// 串口输出
     while(TI == 0);
+	*/
 }
 
 /********************************************************************************
@@ -133,6 +149,22 @@ void  xWriteCH395Data(uint8_t mdata)
 uint8_t  xReadCH395Data(void)                                          /* 从CH395读数据 */
 {
     UINT32 i;
+	
+		  for(i = 0; i < 500000; i ++) 
+    {  
+		  if(COM2.RX_TimeOut > 0)
+        {
+            if(--COM2.RX_TimeOut == 0)
+            {
+                if(COM2.RX_Cnt > 0)
+                {
+                    //for(i=0; i<COM2.RX_Cnt; i++)    TX2_write2buff(RX2_Buffer[i]);//把收到的数据通过串口2输出
+                    COM2.RX_Cnt = 0;   //清除字节数
+									return RX2_Buffer[0];
+                }
+            }
+        }
+			}
     
     for(i = 0; i < 500000; i ++) 
     {  
@@ -146,6 +178,9 @@ uint8_t  xReadCH395Data(void)                                          /* 从CH3
     }
     return(0);                                                       /* 不应该发生的情况 */
 }
+
+
+
 
 #define xEndCH395Cmd()     {}                                        /* 命令结束，仅在SPI模式下有效 */
 

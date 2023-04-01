@@ -26,7 +26,7 @@
 
 #define	UART_BUF_type	edata
 
-#define	PRINTF_SELECT  UART2		//选择 printf 函数所使用的串口，参数 UART1~UART4
+#define	PRINTF_SELECT  UART3		//选择 printf 函数所使用的串口，参数 UART1~UART4
 
 #ifdef UART1
 #define	COM_TX1_Lenth	64
@@ -139,7 +139,7 @@ extern	uint8_t 	UART_BUF_type RX4_Buffer[COM_RX4_Lenth];	//接收缓冲
 uint8_t	UART_Configuration(uint8_t UARTx, COMx_InitDefine *COMx);
 #ifdef UART1
 //void TX1_write2buff(uint8_t dat);
-void PrintString1(uint8_t *puts);
+void PrintString1(uint8_t *puts); 
 #endif
 #ifdef UART2
 //void TX2_write2buff(uint8_t dat);
