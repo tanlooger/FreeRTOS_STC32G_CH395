@@ -11,7 +11,6 @@
 #include "CH395INC.H"
 #include "ch395cmd.h"
 #include "CH395UART.h"
-#include "uart2_3.h"
 
 /********************************************************************************
 * Function Name  : CH395CMDReset
@@ -144,7 +143,7 @@ UINT8 CH395CMDInitCH395(void)
     {
         mDelaymS(10);                                                 /* 延时查询，建议2MS以上*/
         s = CH395GetCmdStatus();                                     /* 不能过于频繁查询*/
-        if(s !=CH395_ERR_BUSY)break;                                 /* 如果CH395芯片返回忙状态*/
+        if(s !=CH395_ERR_BUSY )break;                                 /* 如果CH395芯片返回忙状态*/
         if(i++ > 200)return CH395_ERR_UNKNOW;                        /* 超时退出,本函数需要500MS以上执行完毕 */
     }
     return s;
@@ -585,6 +584,7 @@ UINT8  CH395OpenSocket(UINT8 sockindex)
     {
         mDelaymS(5);                                                 /* 延时查询，建议2MS以上*/
         s = CH395GetCmdStatus();                                     /* 不能过于频繁查询*/
+        //if(s !=CH395_ERR_BUSY && s != 0x01)break;                                 /* 如果CH395芯片返回忙状态*/
         if(s !=CH395_ERR_BUSY)break;                                 /* 如果CH395芯片返回忙状态*/
         if(i++ > 200)return CH395_ERR_UNKNOW;                        /* 超时退出*/
     }

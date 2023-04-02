@@ -530,9 +530,14 @@
               <FilePath>.\Sources\Task\src\rtc.c</FilePath>
             </File>
             <File>
-              <FileName>uart2_3.c</FileName>
+              <FileName>ch395_to_uart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\Task\src\uart2_3.c</FilePath>
+              <FilePath>.\Sources\Task\src\ch395_to_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart_to_ch395.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Task\src\uart_to_ch395.c</FilePath>
             </File>
           </Files>
         </Group>

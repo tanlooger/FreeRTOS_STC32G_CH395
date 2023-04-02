@@ -84,10 +84,12 @@ void CH395SocketInitOpen(void)
     CH395SetSocketProtType(0,SockInf.ProtoType);                     /* 设置socket 0协议类型 */
     CH395SetSocketDesPort(0,SockInf.DesPort);                        /* 设置socket 0目的端口 */
     CH395SetSocketSourPort(0,SockInf.SourPort);                      /* 设置socket 0源端口 */
-    i = CH395OpenSocket(0);                                          /* 打开socket 0 */
-    mStopIfError(i);                                                 /* 检查是否成功 */
-    i = CH395TCPListen(0);                                           /* TCP连接 */
-    mStopIfError(i);                                                 /* 检查是否成功 */
+	/*
+    i = CH395OpenSocket(0);/* 打开socket 0 
+    mStopIfError(i);/* 检查是否成功 
+    i = CH395TCPListen(0);/* TCP连接 
+    mStopIfError(i);/* 检查是否成功 
+	*/
 }
 
 /*******************************************************************************

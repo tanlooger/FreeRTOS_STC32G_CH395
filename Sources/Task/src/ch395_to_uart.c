@@ -29,43 +29,59 @@
 #include "task.h"
 
 #include "STC32G_UART.h"
-#include "uart2_3.h"
+#include "ch395_to_uart.h"
 
 #include "CH395INC.H"
 #include "CH395.H"
 #include "HTTPS.H"
 #include "CH395CMD.H"
+#include "semphr.h"
 
-
+extern SemaphoreHandle_t BinarySemaphore;
 extern void TX2_write2buff(uint8_t dat);
 
 uint16_t Sec_Cnt;    //1秒计数
 
 /* UART任务函数 */
-portTASK_FUNCTION( vUart2_3Task, pvParameters )
+portTASK_FUNCTION( vCh395ToUartTask, pvParameters )
 {
     uint8_t i;
     Sec_Cnt = 0;
+	restart:/* 延时100毫秒 */ 
+	//CH395CMDReset();
 	
 	vTaskDelay(1000);
 	
-	while(1){
 		
     //PrintString2("STC32G UART2-UART3 Test Programme!\r\n");  //UART2发送一个字符串
     PrintString3("STC32G UART3-UART2 Test Programme!\r\n");  //UART3发送一个字符串
 	
-	vTaskDelay(1000);
-	}
+
 	
 	   http_request = (st_http_request*)RecvBuffer;
    printf("CH395EVT Test Demo\n");
    //CH395_PROT_INIT();
 	
 	
- restart:                                                                               /* 延时100毫秒 */ 
-   InitCH395InfParam();                                                                /* 初始化CH395相关变量 */
-   i = CH395Init();                                                                    /* 初始化CH395芯片 */
-   mStopIfError(i);
+ 
+	vTaskDelay(1000);
+	
+	vTaskDelay(1000);
+   InitCH395InfParam();
+	 i = CH395CMDCheckExist(0x65); 
+    printf("CH395CMDCheckExist = %2x\n",(UINT16)i);  
+    if(i != 0x9a){
+			goto restart;
+		}
+    CH395CMDSetIPAddr(CH395Inf.IPAddr);                              /* 设置CH395的IP地址 */
+    CH395CMDSetGWIPAddr(CH395Inf.GWIPAddr);                          /* 设置网关地址 */
+    CH395CMDSetMASKAddr(CH395Inf.MASKAddr);                          /* 设置子网掩码，默认为255.255.255.0*/   
+    i = CH395CMDInitCH395();                                         /* 初始化CH395芯片 */
+    printf("CH395CMDInitCH395 = %2x\n",(UINT16)i); 
+   if (i != CMD_ERR_SUCCESS)
+	 {
+		 goto restart;
+	 }
    while(1)
    {                                                                                   /* 等待以太网连接成功*/
        if(CH395CMDGetPHYStatus() == PHY_DISCONN)                                       /* 查询CH395是否连接 */
@@ -80,9 +96,23 @@ portTASK_FUNCTION( vUart2_3Task, pvParameters )
    }
    InitSocketParam();                                                                  /* 初始化socket相关变量 */
    CH395SocketInitOpen();
+	 i = CH395OpenSocket(0);                                          /* 打开socket 0 */
+    if (i != CMD_ERR_SUCCESS)
+	 {
+		 printf("b.....\n");
+		 goto restart;
+	 }
+    i = CH395TCPListen(0); // TCP连接                                          
+	 if (i != CMD_ERR_SUCCESS)
+	 {
+		 printf("c.....\n");
+		 goto restart;
+	 }
    while(1)
    {
-     //if(Query395Interrupt())CH395GlobalInterrupt();                                    /*查询总中断*/
+		 xSemaphoreTake(BinarySemaphore,portMAX_DELAY);
+     //if(Query395Interrupt())
+		 CH395GlobalInterrupt();                                    /*查询总中断*/
      WebServer();
      if((flag & IPCHANGE )|( flag & PORTCHANGE) )                                      /*IP或者Port改变则复位CH395并重新初始化*/
      {

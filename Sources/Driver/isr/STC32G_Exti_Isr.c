@@ -11,6 +11,7 @@
 /*---------------------------------------------------------------------*/
 
 #include	"STC32G_Exti.h"
+#include "semphr.h"
 
 //========================================================================
 //                               本地变量声明
@@ -81,9 +82,11 @@ void INT3_ISR_Handler (void) interrupt INT3_VECTOR		//进中断时已经清除�
 // 返回: none.
 // 版本: V1.0, 2020-09-23
 //========================================================================
+extern SemaphoreHandle_t BinarySemaphore;
 void INT4_ISR_Handler (void) interrupt INT4_VECTOR		//进中断时已经清除标志
 {
 	// TODO: 在此处添加用户代码
 //	P04 = ~P04;
+	xSemaphoreGive(BinarySemaphore);
 	WakeUpSource = 5;
 }

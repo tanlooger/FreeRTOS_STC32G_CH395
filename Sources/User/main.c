@@ -21,17 +21,24 @@
 #include "rtc.h"
 #include "ntc.h"
 #include "adckey.h"
-#include "uart2_3.h"
+#include "ch395_to_uart.h"
+#include "uart_to_ch395.h"
 #include "MatrixKey.h"
 #include "i2c_ps.h"
 #include "pwmb.h"
+#include "semphr.h"
 
 void vSystemInit( void );
+
+SemaphoreHandle_t BinarySemaphore = NULL;	//二值信号量句柄
+
 
 void main( void )
 {
     /* 系统初始化 */
     vSystemInit();
+	
+	BinarySemaphore = xSemaphoreCreateBinary();
 
 	/* 创建任务 */
     xTaskCreate((TaskFunction_t )vDisplayTask,
@@ -58,10 +65,16 @@ void main( void )
                 (void*          )NULL,
                 (UBaseType_t    )(configDEFAULT_PRIORITIES),
                 (TaskHandle_t*  )NULL);
-    xTaskCreate((TaskFunction_t )vUart2_3Task,
+    xTaskCreate((TaskFunction_t )vCh395ToUartTask,
                 (const char*    )"UART2_3",
                 (uint16_t       )configDEFAULT_STACK_SIZE,
                 (void*          )1000,  //注意pvParameters参数传地址或者立即数时只有低24位是有效位，最高8位编译时会自动填0. 可通过变量或者常量传送32字节数据.
+                (UBaseType_t    )(configDEFAULT_PRIORITIES),
+                (TaskHandle_t*  )NULL);
+		xTaskCreate((TaskFunction_t )vUartToCh395Task,
+                (const char*    )"UART2_3",
+                (uint16_t       )configDEFAULT_STACK_SIZE,
+                (void*          )1000,
                 (UBaseType_t    )(configDEFAULT_PRIORITIES),
                 (TaskHandle_t*  )NULL);
     xTaskCreate((TaskFunction_t )vMatrixKeyTask,

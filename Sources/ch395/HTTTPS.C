@@ -116,9 +116,19 @@ char *strtok(char *srcString, char *delim)
  char tempURI[MAX_URI_SIZE]; 
   char   *ptr1,*name,*ptemp;
  UINT8  flag, ipp[4],i,lastip[4],ADC[3];
- UINT16 port,lastport,len,Socket0SourPort;
+ UINT16 port,lastport,len;
 
-UINT8 RecvBuffer[4096], CH395IPAddr[4],CH395GWIPAddr[4],CH395IPMask[4],CH395MACAddr[6];
+UINT8 RecvBuffer[4096];
+/* CH395相关定义 */
+ UINT8 CH395MACAddr[6] = {0x02,0x03,0x04,0x05,0x06,0x07};                                /* CH395MAC地址 */
+ UINT8 CH395IPAddr[4] = {192,168,1,10};                                                /* CH395IP地址 */
+ UINT8 CH395GWIPAddr[4] = {192,168,10,1};                                               /* CH395网关 */
+ UINT8 CH395IPMask[4] = {255,255,255,0};                                                 /* CH395子网掩码 */
+
+/* socket 相关定义*/
+/* socket 相关定义*/
+ UINT16 Socket0SourPort = 80;                                                            /* Socket 0源端口 */
+
 
 /*********************WEB响应报文***************************************/
  UINT8 httpweb[200] ; 
